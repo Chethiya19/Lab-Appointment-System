@@ -1,0 +1,12 @@
+com\mycompany\rest\service\resources\TestDetailsResource.class
+com\mycompany\rest\service\resources\DBUtils.class
+com\mycompany\rest\service\resources\PatientResource.class
+com\mycompany\rest\service\resources\User.class
+com\mycompany\rest\service\resources\EmailSender$1.class
+com\mycompany\rest\service\resources\Patient.class
+com\mycompany\rest\service\resources\EmailSender.class
+com\mycompany\rest\service\resources\LoginResource.class
+com\mycompany\rest\service\JakartaRestConfiguration.class
+com\mycompany\rest\service\resources\Appointment.class
+com\mycompany\rest\service\resources\AppointmentResource.class
+com\mycompany\rest\service\resources\TestDetails.class
