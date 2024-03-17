@@ -4,8 +4,6 @@
  */
 package com.mycompany.rest.service.resources;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 /**
  *
@@ -14,18 +12,19 @@ import java.time.LocalTime;
 public class Appointment {
     private int Aid;
     private String p_name;
-    private LocalDate date;
-    private LocalTime time;
-    private String testType;
+    private String date;
+    private String time;
+    private String test_Type;
     
     public Appointment() {
+        
     }
 
-    public Appointment( String p_name, LocalDate date, LocalTime time, String testType) {
+    public Appointment( String p_name, String date, String time, String test_Type) {
         this.p_name = p_name;
         this.date = date;
         this.time = time;
-        this.testType = testType;
+        this.test_Type = test_Type;
     }
 
     public int getAid() {
@@ -44,31 +43,27 @@ public class Appointment {
         this.p_name = p_name;
     }
 
-    
-
-    public LocalDate getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public LocalTime getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(LocalTime time) {
+    public void setTime(String time) {
         this.time = time;
     }
 
-    public String getTestType() {
-        return testType;
+    public String getTest_Type() {
+        return test_Type;
     }
 
-    public void setTestType(String testType) {
-        this.testType = testType;
+    public void setTest_Type(String test_Type) {
+        this.test_Type = test_Type;
     }
-    
-    
 }

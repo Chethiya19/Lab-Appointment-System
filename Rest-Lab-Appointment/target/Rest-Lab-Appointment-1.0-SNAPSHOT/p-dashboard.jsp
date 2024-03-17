@@ -125,13 +125,13 @@
             }
             #btnmakeAppointment {
                 width: 100%;
-                background-color: #4caf50; 
+                background-color: #4caf50;
                 color: white;
                 border: none;
                 cursor: pointer;
             }
             #btnmakeAppointment:hover{
-                background-color: #45a049; 
+                background-color: #45a049;
             }
             input[type="submit"] {
                 background-color: #4caf50; /* Green */
@@ -189,6 +189,7 @@
             }
 
         </style>
+        
     </head>
     <body>
         <div class="header fixed-header">
@@ -199,6 +200,11 @@
             <div>
                 <h1>Patient Dashboard</h1>
             </div>
+            <div>
+                <p>User ID: <span id="userId"></span></p>
+                <p>User Name: <span id="userName"></span></p>
+            </div>
+
             <div class="logout-btn">
                 <button onclick="logout()">Logout</button>
             </div>
@@ -221,11 +227,11 @@
                     <h2 class="dashboard-heading">Make an Appointment</h2>
                     <form action="#" method="post">
                         <label for="patientName">Patient Name:</label>
-                        <input type="text" id="patientName" name="patientName" required><br><br>
+                        <input type="text" id="patientName" name="patientName" required>
                         <label for="appointmentDate">Appointment Date:</label>
                         <input type="date" id="appointmentDate" name="appointmentDate" min="<%=java.time.LocalDate.now()%>" required>
                         <label for="appointmentTime">Appointment Time:</label>
-                        <input type="time" id="appointmentTime" name="appointmentTime" required><br><br>
+                        <input type="time" id="appointmentTime" name="appointmentTime" required>
                         <label for="testType">Test Type:</label>
                         <select id="testType" name="testType" required>
                             <option value="">Select Test Type</option>
@@ -262,13 +268,13 @@
         </div>
 
         <script>
-            const url = "http://localhost:8080/Rest--Lab-Appointment/resources/appointments/";
+            const url = "http://localhost:8080/Rest-Service/resources/appointments/";
             function makeAppointment() {
                 const person = {
                     "p_name": document.getElementById("patientName").value,
                     "date": document.getElementById("appointmentDate").value,
                     "time": document.getElementById("appointmentTime").value,
-                    "testType": document.getElementById("testType").value
+                    "test_Type": document.getElementById("testType").value
                 };
 
                 const options = {
@@ -282,8 +288,8 @@
                 fetch(url, options);
 
             }
-            
-            
+
+
             window.onload = function () {
                 // Ensure the side menu is displayed when the page loads
                 var menu = document.getElementById("sideMenu");
@@ -334,5 +340,13 @@
                 }
             });
         </script>
+        <script>
+        // Retrieve user ID and name from session storage
+        var userId = sessionStorage.getItem("userId");
+        var userName = sessionStorage.getItem("userName");
+        // Display user ID and name
+        document.getElementById("userId").textContent = userId;
+        document.getElementById("userName").textContent = userName;
+    </script>
     </body>
 </html>

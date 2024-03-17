@@ -71,33 +71,37 @@
                 var password = document.getElementById("password").value;
 
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8080/Rest-Service/resources/login", true); // Replace yourprojectname with your project name
-                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                xhr.open("POST", "http://localhost:8080/Rest-Service/resources/login", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
                 xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4 && xhr.status === 200) {
-                        var response = JSON.parse(xhr.responseText);
-                        if (response.success) {
-                            document.getElementById("message").innerHTML = "Login Successful";
-                            // Redirect to dashboard or perform further actions
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                // Login successful, redirect to the patient dashboard
+                                window.location.href = "p-dashboard.jsp";
+                            } else {
+                                document.getElementById("message").innerHTML = response.message;
+                            }
                         } else {
-                            document.getElementById("message").innerHTML = "Invalid Email or Password";
+                            document.getElementById("message").innerHTML = "An error occurred. Please try again later.";
                         }
                     }
                 };
-                var data = "email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password);
+                var data = JSON.stringify({email: email, password: password});
                 xhr.send(data);
+                return false; // Prevent the form from submitting
             }
-
         </script>
 
     </head>
     <body>
         <div class="login-container">
             <h1>Patient Login</h1>
-            <form id="loginForm">
+            <form id="loginForm" onsubmit="return checkLogin()">
                 <input type="email" id="email" name="email" placeholder="Email" required><br>
                 <input type="password" id="password" name="password" placeholder="Password" required><br>
-                <button type="submit" onclick='checkLogin()'>Login</button>
+                <button type="submit">Login</button>
                 <label>Don't you have an account - <a href="p-signup.jsp">Sign up</a></label>
             </form>
             <div id="message" class="message"></div>

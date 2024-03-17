@@ -239,9 +239,9 @@
             }
 
         </style>
-        
+
         <script>
-            const url = "http://localhost:8080/Rest-lab-Appointment/resources/testdetails/";
+            const url = "http://localhost:8080/Rest-Service/resources/testdetails/";
             function getTest() {
                 let id = document.getElementById("testId").value;
                 const options = {
@@ -324,8 +324,73 @@
                 ocument.getElementById("technician").value = "";
                 ocument.getElementById("doctor").value = "";
             }
+
         </script>
         
+        <script>
+            const url = "http://localhost:8080/Rest-lab-Appointment/resources/patients/";
+            function getPatients() {
+                const options = {
+                    method: "GET"
+                };
+                fetch(url, options)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.length > 0) {
+                                // Assuming there's a table element with the id "patientTable" in your HTML
+                                const table = document.getElementById("patientDetailsView");
+
+                                // Clear existing table rows
+                                table.innerHTML = "";
+
+                                // Creating table headers
+                                const headers = ["Name", "Email", "Date of Birth", "Contact"];
+                                const headerRow = document.createElement("tr");
+                                headers.forEach(headerText => {
+                                    const header = document.createElement("th");
+                                    header.textContent = headerText;
+                                    headerRow.appendChild(header);
+                                });
+                                table.appendChild(headerRow);
+
+                                // Loop through the patient data and add rows to the table
+                                data.forEach(patient => {
+                                    const row = document.createElement("tr");
+
+                                    // Extracting patient information
+                                    const nameCell = document.createElement("td");
+                                    nameCell.textContent = patient.name;
+
+                                    const emailCell = document.createElement("td");
+                                    emailCell.textContent = patient.email;
+
+                                    const dobCell = document.createElement("td");
+                                    dobCell.textContent = patient.dateOfBirth;
+
+                                    const contactCell = document.createElement("td");
+                                    contactCell.textContent = patient.contact;
+
+                                    // Appending cells to the row
+                                    row.appendChild(nameCell);
+                                    row.appendChild(emailCell);
+                                    row.appendChild(dobCell);
+                                    row.appendChild(contactCell);
+
+                                    // Appending row to the table
+                                    table.appendChild(row);
+                                });
+                            } else {
+                                alert("No patients found");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching patients:", error);
+                            alert("Error fetching patients. Please try again later.");
+                        });
+            }
+        </script>
+
+
     </head>
     <body>
         <div class="header fixed-header">
@@ -389,10 +454,10 @@
                         <input type="text" id="testId" name="testId" required>
 
                         <label for="patientName">Patient Name:</label>
-                        <input type="text" id="patientName" name="patientName" required>
+                        <input type="text" id="patientName" name="patientName" >
 
                         <label for="testType">Test Type:</label>
-                        <select id="testType" name="testType" required>
+                        <select id="testType" name="testType" >
                             <option value="">Select Test Type</option>
                             <option value="Blood Test">Blood Test</option>
                             <option value="Microbiological Tests">Microbiological Tests</option>
@@ -406,10 +471,10 @@
                         </select>
 
                         <label for="testResult">Test Result:</label>
-                        <input type="text" id="testResult" name="testResult" required>
+                        <input type="text" id="testResult" name="testResult" >
 
                         <label for="technician">Technician Name:</label>
-                        <select id="technician" name="doctor" required>
+                        <select id="technician" name="doctor" >
                             <option value="">Select Technician</option>
                             <option value="Perera">MR.Perera</option>
                             <option value="Rathnayake">MR.Rathnayake</option>
@@ -418,7 +483,7 @@
                         </select>
 
                         <label for="doctor">Recommended Doctor:</label>
-                        <select id="doctor" name="doctor" required>
+                        <select id="doctor" name="doctor" >
                             <option value="">Select Doctor</option>
                             <option value="Wijesooriya">DR.Wijesooriya</option>
                             <option value="Senanayaka">DR.Senanayaka</option>
@@ -426,7 +491,7 @@
                             <option value="Liyanage">DR.Liyanage</option>
                         </select>
                         <br><br>
-<!--                        <input type="submit" value="Submit">-->
+                        <!--                        <input type="submit" value="Submit">-->
                         <button id='btngetTest' onclick='getTest()'>Get By ID</button>
                         <button id='btnaddTest' onclick='addTest()'>Add</button>
                         <button id='btnupdateTest' onclick='updateTest()'>Update</button>
@@ -476,6 +541,24 @@
                     <!-- Patient Details Section -->
                     <h2 class="dashboard-heading">Patient Details</h2>
                     <!-- Add your patient details content here -->
+
+                    <div id="patientDetailsView">
+                        <table id="patientDetailsView">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Date Of Birth</th>
+                                    <th>Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
