@@ -238,54 +238,145 @@
                 background-color: #0056b3;
             }
 
+            #appointmentsTable {
+                width: 100%;
+                border-collapse: collapse;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            #appointmentsTable th,
+            #appointmentsTable td {
+                padding: 12px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
+
+            #appointmentsTable th {
+                background-color: #f2f2f2;
+                color: #333;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            #appointmentsTable tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            /* Button Styling */
+            .download-button {
+                background-color: #4caf50;
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 14px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+
+            .download-button:hover {
+                background-color: #45a049;
+            }
         </style>
 
         <script>
             const url = "http://localhost:8080/Rest-Service/resources/testdetails/";
-            function getTest() {
+            function getTest(event) {
+                event.preventDefault();
+
                 let id = document.getElementById("testId").value;
+
+                if (id.trim() === "") {
+                    alert("Please enter a test ID.");
+                    return;
+                }
+
                 const options = {
                     method: "GET"
                 };
                 fetch(url + id, options)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data !== null) {
-                                document.getElementById("patientName").value = data.patientName;
-                                document.getElementById("testType").value = data.testType;
-                                document.getElementById("testResult").value = data.testResult;
-                                document.getElementById("technician").value = data.technician;
-                                document.getElementById("doctor").value = data.doctor;
-                            } else {
-                                alert("Not found");
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error("Test details not found");
                             }
+                            return res.json();
+                        })
+                        .then(data => {
+                            document.getElementById("patientName").value = data.patientName;
+                            document.getElementById("testType").value = data.testType;
+                            document.getElementById("testResult").value = data.testResult;
+                            document.getElementById("technician").value = data.technician;
+                            document.getElementById("doctor").value = data.doctor;
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            document.getElementById("testDetailsForm").reset();
+                        });
+
+            }
+
+
+            function addTest(event) {
+                event.preventDefault();
+                let id = document.getElementById("testId").value;
+                
+                fetch(url + id)
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Test ID is already in use. Please choose a different ID.");
+                            } else {
+                                
+                                const person = {
+                                    "testId": id,
+                                    "patientName": document.getElementById("patientName").value,
+                                    "testType": document.getElementById("testType").value,
+                                    "testResult": document.getElementById("testResult").value,
+                                    "technician": document.getElementById("technician").value,
+                                    "doctor": document.getElementById("doctor").value
+                                };
+
+                                const options = {
+                                    method: "POST",
+                                    headers: {
+                                        "content-type": "application/json"
+                                    },
+                                    body: JSON.stringify(person)
+                                };
+
+                                fetch(url, options)
+                                        .then(response => {
+                                            if (response.ok) {
+                                                alert("Test details added successfully!");
+                                                document.getElementById("testDetailsForm").reset();
+                                            } else {
+                                                // Test addition failed
+                                                throw new Error("Failed to add test.");
+                                            }
+                                        })
+                                        .catch(error => {
+                                            console.error('Error:', error);
+                                            alert("An error occurred. Please try again later.");
+                                        });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert("An error occurred. Please try again later.");
                         });
             }
 
 
-            function addTest() {
-                const person = {
-                    "testId": document.getElementById("testId").value,
-                    "patientName": document.getElementById("patientName").value,
-                    "testType": document.getElementById("testType").value,
-                    "testResult": document.getElementById("testResult").value,
-                    "technician": document.getElementById("technician").value,
-                    "doctor": document.getElementById("doctor").value
-                };
 
-                const options = {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json"
-                    },
-                    body: JSON.stringify(person)
-                };
 
-                fetch(url, options);
+            function updateTest(event) {
+                event.preventDefault();
 
-            }
-
-            function updateTest() {
                 let id = document.getElementById("testId").value;
                 const person = {
                     "testId": id,
@@ -304,91 +395,134 @@
                     body: JSON.stringify(person)
                 };
 
-                fetch(url + id, options);
+                fetch(url + id, options)
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Test details updated successfully!");
+                                document.getElementById("testDetailsForm").reset();
+                            } else {
+                                throw new Error("Failed to update data.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("Failed to update data. Please try again later.");
+                        });
             }
 
-            function deleteTest() {
+
+            function deleteTest(event) {
+                event.preventDefault();
+
                 let id = document.getElementById("testId").value;
-                const options = {
-                    method: "DELETE"
-                };
-                fetch(url + id, options);
+
+                if (!id) {
+                    alert("Please enter a valid Test ID.");
+                    return;
+                }
+
+                fetch(url + id)
+                        .then(response => {
+                            if (response.ok) {
+                                const options = {
+                                    method: "DELETE"
+                                };
+
+                                return fetch(url + id, options);
+                            } else {
+                                throw new Error("Test ID does not exist.");
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Test details deleted successfully!");
+                                document.getElementById("testDetailsForm").reset();
+                            } else {
+                                throw new Error("Failed to delete data.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("Failed to delete data. " + error.message);
+                        });
             }
 
 
-            function clearTest() {
+            function clearTest(event) {
+                event.preventDefault();
+
                 document.getElementById("testId").value = "";
                 document.getElementById("patientName").value = "";
                 document.getElementById("testType").value = "";
                 document.getElementById("testResult").value = "";
-                ocument.getElementById("technician").value = "";
-                ocument.getElementById("doctor").value = "";
+                document.getElementById("technician").value = "";
+                document.getElementById("doctor").value = "";
             }
 
         </script>
+
+        <!--        <script>
+                    const url = "http://localhost:8080/Rest-Service/resources/patients/";
+                    function getPatients() {
+                        const options = {
+                            method: "GET"
+                        };
+                        fetch(url, options)
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.length > 0) {
+                                        // Assuming there's a table element with the id "patientTable" in your HTML
+                                        const table = document.getElementById("patientDetailsView");
         
-        <script>
-            const url = "http://localhost:8080/Rest-lab-Appointment/resources/patients/";
-            function getPatients() {
-                const options = {
-                    method: "GET"
-                };
-                fetch(url, options)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.length > 0) {
-                                // Assuming there's a table element with the id "patientTable" in your HTML
-                                const table = document.getElementById("patientDetailsView");
-
-                                // Clear existing table rows
-                                table.innerHTML = "";
-
-                                // Creating table headers
-                                const headers = ["Name", "Email", "Date of Birth", "Contact"];
-                                const headerRow = document.createElement("tr");
-                                headers.forEach(headerText => {
-                                    const header = document.createElement("th");
-                                    header.textContent = headerText;
-                                    headerRow.appendChild(header);
+                                        // Clear existing table rows
+                                        table.innerHTML = "";
+        
+                                        // Creating table headers
+                                        const headers = ["Name", "Email", "Date of Birth", "Contact"];
+                                        const headerRow = document.createElement("tr");
+                                        headers.forEach(headerText => {
+                                            const header = document.createElement("th");
+                                            header.textContent = headerText;
+                                            headerRow.appendChild(header);
+                                        });
+                                        table.appendChild(headerRow);
+        
+                                        // Loop through the patient data and add rows to the table
+                                        data.forEach(patient => {
+                                            const row = document.createElement("tr");
+        
+                                            // Extracting patient information
+                                            const nameCell = document.createElement("td");
+                                            nameCell.textContent = patient.name;
+        
+                                            const emailCell = document.createElement("td");
+                                            emailCell.textContent = patient.email;
+        
+                                            const dobCell = document.createElement("td");
+                                            dobCell.textContent = patient.dateOfBirth;
+        
+                                            const contactCell = document.createElement("td");
+                                            contactCell.textContent = patient.contact;
+        
+                                            // Appending cells to the row
+                                            row.appendChild(nameCell);
+                                            row.appendChild(emailCell);
+                                            row.appendChild(dobCell);
+                                            row.appendChild(contactCell);
+        
+                                            // Appending row to the table
+                                            table.appendChild(row);
+                                        });
+                                    } else {
+                                        alert("No patients found");
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error("Error fetching patients:", error);
+                                    alert("Error fetching patients. Please try again later.");
                                 });
-                                table.appendChild(headerRow);
-
-                                // Loop through the patient data and add rows to the table
-                                data.forEach(patient => {
-                                    const row = document.createElement("tr");
-
-                                    // Extracting patient information
-                                    const nameCell = document.createElement("td");
-                                    nameCell.textContent = patient.name;
-
-                                    const emailCell = document.createElement("td");
-                                    emailCell.textContent = patient.email;
-
-                                    const dobCell = document.createElement("td");
-                                    dobCell.textContent = patient.dateOfBirth;
-
-                                    const contactCell = document.createElement("td");
-                                    contactCell.textContent = patient.contact;
-
-                                    // Appending cells to the row
-                                    row.appendChild(nameCell);
-                                    row.appendChild(emailCell);
-                                    row.appendChild(dobCell);
-                                    row.appendChild(contactCell);
-
-                                    // Appending row to the table
-                                    table.appendChild(row);
-                                });
-                            } else {
-                                alert("No patients found");
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error fetching patients:", error);
-                            alert("Error fetching patients. Please try again later.");
-                        });
-            }
-        </script>
+                    }
+                </script>-->
 
 
     </head>
@@ -411,7 +545,7 @@
                     <a href="#" onclick="showViewAppointments()">View Appointments</a>
                 </div><hr>
                 <div class="menu-item">
-                    <a href="#" onclick="manageTestDetails()">Manage Test Details</a>
+                    <a href="#" onclick="showManageTestDetails()">Manage Test Details</a>
                 </div><hr>
                 <div class="menu-item">
                     <a href="#" onclick="showUploadReports()">Upload Reports</a>
@@ -428,23 +562,23 @@
                     <!-- View Appointments Section -->
                     <h2 class="dashboard-heading">View Appointments</h2>
                     <input type="text" id="appointmentNumberInput" placeholder="Enter Appointment Number">
-                    <button onclick="searchAppointment()">Search</button>
+                    <button onclick="getAppointments()">Search</button>
                     <br><br><br>
-                    <div id="appointmentView">
-                        <table id="appointmentsTable">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Name</th>
-                                    <th>Date</th>
-                                    <th>Test Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Table rows will be dynamically added here -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <table id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Test Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="appointmentsTableBody">
+                            <!-- Reports will be populated here -->
+                        </tbody>
+                    </table>
+
                 </div>
                 <div id="testDetailsContent" style="display: none;">
                     <!-- Patient Details Section -->
@@ -492,12 +626,12 @@
                         </select>
                         <br><br>
                         <!--                        <input type="submit" value="Submit">-->
-                        <button id='btngetTest' onclick='getTest()'>Get By ID</button>
-                        <button id='btnaddTest' onclick='addTest()'>Add</button>
-                        <button id='btnupdateTest' onclick='updateTest()'>Update</button>
-                        <button id='btndeleteTest' onclick='deleteTest()'>Delete</button>
+                        <button id='btngetTest' onclick='getTest(event)'>Get By ID</button>
+                        <button id='btnaddTest' onclick='addTest(event)' required>Add</button>
+                        <button id='btnupdateTest' onclick='updateTest(event)' required>Update</button>
+                        <button id='btndeleteTest' onclick='deleteTest(event)' required>Delete</button>
                         <br /><br>
-                        <button id='btnclearTest' onclick='clearTest()'>Clear</button>
+                        <button id='btnclearTest' onclick='clearTest(event)'>Clear</button>
                     </form>
                     <br><hr><br>
 
@@ -564,24 +698,6 @@
         </div>
 
         <script>
-
-            fetch('http://localhost:8080/Rest-Service/resources/appointments/')
-                    .then(response => response.json())
-                    .then(appointments => {
-                        const tableBody = document.querySelector('#appointmentsTable tbody');
-                        appointments.forEach(appointment => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                        <td>${appointment.id}</td>
-                        <td>${appointment.name}</td>
-                        <td>${appointment.date}</td>
-                        <td>${appointment.testType}</td>
-                    `;
-                            tableBody.appendChild(row);
-                        });
-                    })
-                    .catch(error => console.error('Error fetching appointments:', error));
-
             window.onload = function () {
                 // Ensure the side menu is displayed when the page loads
                 var menu = document.getElementById("sideMenu");
@@ -613,7 +729,7 @@
                 document.getElementById("patientDetailsContent").style.display = "none";
             }
 
-            function manageTestDetails() {
+            function showManageTestDetails() {
                 document.getElementById("viewAppointmentsContent").style.display = "none";
                 document.getElementById("testDetailsContent").style.display = "block";
                 document.getElementById("uploadReportsContent").style.display = "none";
@@ -645,14 +761,33 @@
                 document.getElementById("patientDetailsContent").style.display = "block";
             }
 
-            document.getElementById("toggleButton").addEventListener("click", function () {
-                var content = document.getElementById("viewAppointmentsContent");
-                if (content.style.display === "none") {
-                    content.style.display = "block";
-                } else {
-                    content.style.display = "none";
-                }
-            });
+
+        </script>
+
+        <script>
+            // Function to fetch appointments from the server and populate the table
+            function getAppointments() {
+                const url = "http://localhost:8080/Rest-Service/resources/appointments/";
+
+                fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            const appointmentsTableBody = document.getElementById('appointmentsTableBody');
+                            appointmentsTableBody.innerHTML = ''; // Clear existing rows
+                            data.forEach(appointment => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                        <td>${appointment.id}</td>
+                        <td>${appointment.name}</td>
+                        <td>${appointment.date}</td>
+                        <td>${appointment.time}</td>
+                        <td>${appointment.testType}</td>
+                    `;
+                                appointmentsTableBody.appendChild(row);
+                            });
+                        })
+                        .catch(error => console.error('Error fetching appointments:', error));
+            }
         </script>
 
     </body>

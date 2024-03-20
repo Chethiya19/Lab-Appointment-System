@@ -27,6 +27,10 @@ public class Appointment {
         this.test_Type = test_Type;
     }
 
+    Appointment(int aInt, String string, String string0, String string1, String string2) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
     public int getAid() {
         return Aid;
     }

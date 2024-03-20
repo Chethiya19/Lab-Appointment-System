@@ -23,21 +23,22 @@ import java.util.List;
  */
 @Path("appointments")
 public class AppointmentResource {
+
     Gson gson = new Gson();
 
     public AppointmentResource() {
     }
-    
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response makeAppointment(String json){ 
-        Appointment appointment = gson.fromJson(json, Appointment.class); 
+    public Response makeAppointment(String json) {
+        Appointment appointment = gson.fromJson(json, Appointment.class);
         new DBUtils().makeAppointment(appointment);
         return Response
                 .status(Response.Status.CREATED)
                 .build();
     }
-    
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAppointments() {
@@ -45,4 +46,28 @@ public class AppointmentResource {
                 .ok(gson.toJson(new DBUtils().getAppointments()))
                 .build();
     }
+
+    @GET
+    @Path("{Aid}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAppointment(@PathParam("Aid") int id) {
+        try {
+            Appointment appointment = new DBUtils().getAppointment(id);
+
+            if (appointment != null) {
+                return Response
+                        .ok(gson.toJson(appointment))
+                        .build();
+            }
+
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .build();
+        } catch (Exception e) {
+            return Response
+                    .status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .build();
+        }
+    }
+
 }

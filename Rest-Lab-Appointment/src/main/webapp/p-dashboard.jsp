@@ -188,8 +188,55 @@
                 background-color: #0056b3;
             }
 
+            /* Table Styling */
+            #reportTable {
+                width: 100%;
+                border-collapse: collapse;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            #reportTable th,
+            #reportTable td {
+                padding: 12px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+            }
+
+            #reportTable th {
+                background-color: #f2f2f2;
+                color: #333;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            #reportTable tbody tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            /* Button Styling */
+            .download-button {
+                background-color: #4caf50;
+                border: none;
+                color: white;
+                padding: 8px 16px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 14px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 4px;
+                transition: background-color 0.3s;
+            }
+
+            .download-button:hover {
+                background-color: #45a049;
+            }
+
         </style>
-        
+
     </head>
     <body>
         <div class="header fixed-header">
@@ -200,10 +247,10 @@
             <div>
                 <h1>Patient Dashboard</h1>
             </div>
-            <div>
-                <p>User ID: <span id="userId"></span></p>
-                <p>User Name: <span id="userName"></span></p>
-            </div>
+            <!--            <div>
+                            <p>User ID: <span id="Id"></span></p>
+                            <p>User Name: <span id="userName"></span></p>
+                        </div>-->
 
             <div class="logout-btn">
                 <button onclick="logout()">Logout</button>
@@ -257,12 +304,25 @@
                     <button onclick="searchAppointment()">Search</button>
                     <div id="appointmentView"></div>
                 </div>
-                <div id="downloadReportsContent" style="display: none;">
+                <div id="downloadReportsContent">
                     <!-- Download Reports Section -->
                     <h2 class="dashboard-heading">Download Reports</h2>
                     <input type="text" id="reportNumberInput" placeholder="Enter Report Number">
-                    <button onclick="searchReport()">Search</button>
-                    <div id="reportView"></div>
+                    <button onclick="searchReport()">Search</button> <br><br>
+                    <table id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Report ID</th>
+                                <th>Patient Name</th>
+                                <th>Report Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportView">
+                            <!-- Reports will be populated here -->
+                        </tbody>
+                    </table>
+                   
                 </div>
             </div>
         </div>
@@ -331,22 +391,83 @@
                 document.getElementById("downloadReportsContent").style.display = "block";
             }
 
-            document.getElementById("toggleButton").addEventListener("click", function () {
-                var content = document.getElementById("viewAppointmentsContent");
-                if (content.style.display === "none") {
-                    content.style.display = "block";
-                } else {
-                    content.style.display = "none";
-                }
-            });
+//            document.getElementById("toggleButton").addEventListener("click", function () {
+//                var content = document.getElementById("viewAppointmentsContent");
+//                if (content.style.display === "none") {
+//                    content.style.display = "block";
+//                } else {
+//                    content.style.display = "none";
+//                }
+//            });
         </script>
+<!--        <script>
+            // Retrieve user ID and name from session storage
+            var Id = sessionStorage.getItem("Id");
+            var userName = sessionStorage.getItem("userName");
+            // Display user ID and name
+            document.getElementById("Id").textContent = Id;
+            document.getElementById("userName").textContent = userName;
+        </script>-->
+
         <script>
-        // Retrieve user ID and name from session storage
-        var userId = sessionStorage.getItem("userId");
-        var userName = sessionStorage.getItem("userName");
-        // Display user ID and name
-        document.getElementById("userId").textContent = userId;
-        document.getElementById("userName").textContent = userName;
-    </script>
+            // Sample data for demonstration
+            var reportsData = [
+                {id: 1, patientName: "Yasintha", reportName: "ABC Lab Report"},
+                {id: 2, patientName: "Tamasha", reportName: "Medi lab Report"},
+                {id: 3, patientName: "Chethiya", reportName: "Sample Bio lab Report"}
+            ];
+
+            // Function to populate the table with reports
+            function populateReportsTable() {
+                var tableBody = document.getElementById("reportView");
+
+                // Clear existing table rows
+                tableBody.innerHTML = "";
+
+                // Loop through the reportsData and create table rows
+                reportsData.forEach(function (report) {
+                    var row = document.createElement("tr");
+
+                    // Add columns for Report ID, Patient Name, and Report Name
+                    var idCell = document.createElement("td");
+                    idCell.textContent = report.id;
+                    row.appendChild(idCell);
+
+                    var patientNameCell = document.createElement("td");
+                    patientNameCell.textContent = report.patientName;
+                    row.appendChild(patientNameCell);
+
+                    var reportNameCell = document.createElement("td");
+                    reportNameCell.textContent = report.reportName;
+                    row.appendChild(reportNameCell);
+
+                    // Add download button
+                    var downloadCell = document.createElement("td");
+                    var downloadButton = document.createElement("button");
+                    downloadButton.textContent = "Download";
+                    downloadButton.onclick = function () {
+                        // Add your download logic here
+                        // For demonstration, let's just alert the report name
+                        alert("Downloading " + report.reportName);
+                    };
+                    downloadCell.appendChild(downloadButton);
+                    row.appendChild(downloadCell);
+
+                    // Append the row to the table
+                    tableBody.appendChild(row);
+                });
+            }
+
+            // Call the function to populate the table initially
+            populateReportsTable();
+
+            // Function for searching report (if needed)
+            function searchReport() {
+                // Add your search logic here
+                // For demonstration, let's just alert the report number
+                var reportNumber = document.getElementById("reportNumberInput").value;
+                alert("Searching for report number: " + reportNumber);
+            }
+        </script>
     </body>
 </html>

@@ -10,8 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -184,20 +182,49 @@ public class DBUtils {
         }
         return false;
     }
+    
+    public Appointment getAppointment(int Aid) throws SQLException {
+    Appointment appointment = null;
+    try {
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM appointment WHERE Aid=" + Aid);) {
+
+            while (rs.next()) {
+                appointment = new Appointment();
+                appointment.setAid(rs.getInt("Aid"));
+                appointment.setP_name(rs.getString("p_name"));
+                appointment.setDate(rs.getString("date"));
+                appointment.setTime(rs.getString("time"));
+                appointment.setTest_Type(rs.getString("test_type"));
+                break;
+            }
+        } catch (SQLException e) {
+            System.err.print(e);
+            throw e;
+        }
+    } catch (SQLException e) {
+        System.err.print(e);
+        throw e;
+    }
+    return appointment;
+}
+
 
     public List<Appointment> getAppointments() {
         List<Appointment> appointments = new ArrayList<>();
-        try {
-            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
-                while (rs.next()) {
-                    Appointment appointment = new Appointment();
-                    appointment.setAid(rs.getInt("Aid"));
-                    appointment.setP_name(rs.getString("P_name"));
-                    appointment.setDate(rs.getString("date"));
-                    appointment.setTime(rs.getString("time"));
-                    appointment.setTest_Type(rs.getString("test_type"));
-                    appointments.add(appointment);
-                }
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
+            while (rs.next()) {
+                Appointment appointment = new Appointment(
+                        rs.getInt("Aid"),
+                        rs.getString("p_name"),
+                        rs.getString("date"),
+                        rs.getString("time"),
+                        rs.getString("test_type")
+                );
+                appointments.add(appointment);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -209,7 +236,7 @@ public class DBUtils {
         TestDetails td = null;
         try {
 
-            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM test_details WHERE id=" + id);) {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM test_details WHERE testId=" + id);) {
                 while (rs.next()) {
                     td = new TestDetails();
                     td.setTestId(rs.getInt("testId"));
@@ -314,52 +341,5 @@ public class DBUtils {
             ex.printStackTrace();
             return false;
         }
-    }
-    
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, USER, PASS);
-    }
-
-    public static void closeQuietly(AutoCloseable resource) {
-        if (resource != null) {
-            try {
-                resource.close();
-            } catch (Exception e) {
-                // Ignore
-            }
-        }
-    }
-    
-    boolean isValidCredentials(String email, String password) {
-        // Database connection
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        boolean isValid = false;
-
-        try {
-            conn = DBUtils.getConnection();
-
-            // Prepare SQL statement to check credentials
-            String sql = "SELECT * FROM patient WHERE email = ? AND password = ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, email);
-            stmt.setString(2, password);
-
-            // Execute query
-            rs = stmt.executeQuery();
-
-            // Check if result set has any rows
-            isValid = rs.next();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // Close connections
-            DBUtils.closeQuietly(rs);
-            DBUtils.closeQuietly(stmt);
-            DBUtils.closeQuietly(conn);
-        }
-
-        return isValid;
     }
 }

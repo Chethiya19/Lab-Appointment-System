@@ -243,54 +243,102 @@
 
         <script>
             const url = "http://localhost:8080/Rest-Service/resources/patients/";
-            function addPatient() {
+
+            function getPatient() {
+                event.preventDefault();
+
+                let id = document.getElementById("Id").value;
+
+                if (id.trim() === "") {
+                    alert("Please enter the Patient ID.");
+                    return;
+                }
+
+                const url = "http://localhost:8080/Rest-Service/resources/patients/";
+
+                const options = {
+                    method: "GET"
+                };
+
+                fetch(url + id, options)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error("Patient details not found");
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            document.getElementById("name").value = data.name;
+                            document.getElementById("email").value = data.email;
+                            document.getElementById("password").value = data.password;
+                            document.getElementById("dob").value = data.dob;
+                            document.getElementById("contact").value = data.contact;
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            document.getElementById("managePatientForm").reset();
+                        });
+            }
+
+            function addPatient(event) {
+                event.preventDefault();
+
+                let email = document.getElementById("email").value;
+                const url = 'http://localhost:8080/Rest-Service/resources/patients/';
+                fetch(url + email)
+                        .then(response => {
+                            if (response.ok) {
+                                // Email already exists, display alert
+                                alert("Email is already in use. Please choose a different Email.");
+                            } else {
+                                // Email is not in use, proceed to add patient
+                                const person = {
+                                    "name": document.getElementById("name").value,
+                                    "email": document.getElementById("email").value,
+                                    "password": document.getElementById("password").value,
+                                    "dob": document.getElementById("dob").value,
+                                    "contact": document.getElementById("contact").value
+                                };
+
+                                const options = {
+                                    method: "POST",
+                                    headers: {
+                                        "content-type": "application/json"
+                                    },
+                                    body: JSON.stringify(person)
+                                };
+
+                                return fetch(url, options);
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Patient details added successfully!");
+                                document.getElementById("managePatientForm").reset();
+                            } else {
+                                // Test addition failed
+                                throw new Error("Failed to add Patient.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert("An error occurred. Please try again later.");
+                        });
+            }
+
+
+
+            function updatePatient() {
+                event.preventDefault();
+
+                let id = document.getElementById("Id").value;
                 const person = {
+                    "id": id,
                     "name": document.getElementById("name").value,
                     "email": document.getElementById("email").value,
                     "password": document.getElementById("password").value,
                     "dob": document.getElementById("dob").value,
                     "contact": document.getElementById("contact").value
-                };
-
-                const options = {
-                    method: "POST",
-                    headers: {
-                        "content-type": "application/json"
-                    },
-                    body: JSON.stringify(person)
-                };
-
-                fetch(url, options);
-
-            }
-
-            function getPatient() {
-                let id = document.getElementById("Id").value;
-                const options = {
-                    method: "GET"
-                };
-                fetch(url + id, options)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data !== null) {
-                                document.getElementById("name").value = data.name;
-                                document.getElementById("email").value = data.email;
-                                document.getElementById("password").value = data.password;
-                                document.getElementById("dob").value = data.dateOfBirth;
-                                document.getElementById("contact").value = data.contact;
-                            } else {
-                                alert("Not found");
-                            }
-                        });
-            }
-            
-            function updatePatient() {
-                let id = document.getElementById("txtID").value;
-                const person = {
-                    "id": id,
-                    "name": document.getElementById("txtName").value,
-                    "dateOfBirth": document.getElementById("txtDOB").value,
-                    "email": document.getElementById("txtEmail").value
                 };
 
                 const options = {
@@ -301,18 +349,33 @@
                     body: JSON.stringify(person)
                 };
 
-                fetch(url + id, options);
+                fetch(url + id, options)
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Patient updated successfully!");
+                                document.getElementById("managePatientForm").reset();
+                            } else {
+                                throw new Error('Failed to update patient. Please try again.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        });
             }
 
+
             function deletePatient() {
+                event.preventDefault();
                 let id = document.getElementById("txtID").value;
                 const options = {
                     method: "DELETE"
                 };
                 fetch(url + id, options);
             }
-            
+
             function clearPatient() {
+                document.getElementById("Id").value = "";
                 document.getElementById("name").value = "";
                 document.getElementById("email").value = "";
                 document.getElementById("password").value = "";
@@ -357,11 +420,61 @@
                         <form id="searchPatientform" method="GET">
                             <label for="Id">Enter Patient ID:</label>
                             <input type="text" id="Id" name="Id" placeholder="Patient ID..." required><br><br>
-                            <button id='btngetPatient' onclick='getPatient()'>Get By ID</button>
+                            <button id='btngetPatient' onclick='getPatient(event)'>Get By ID</button>
                         </form>
                     </div><br>
                     <div id="addPatient">
                         <h2>Add Patients</h2>
+                        <form id="managePatientForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <input type="text" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="password">Password:</label>
+                                    <input type="password" id="password" name="password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth:</label>
+                                    <input type="date" id="dob" name="dob" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact">Contact:</label>
+                                    <input type="tel" id="contact" name="contact" required>
+                                </div>
+                            </div>
+                            <!--                        <button type="submit">Submit</button>-->
+
+                            <button id='btnaddPatient' onclick='addPatient(event)'>Add</button>
+                            <button id='btnupdatePatient' onclick='updatePatient(event)'>Update</button>
+                            <button id='btndeletePatient' onclick='deletePatient(event)'>Delete</button>
+
+                            <button id='btnclearPatient' onclick='clearPatient()'>Clear</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="manageTechniciansContent" style="display: none;">
+                    <!-- Manage Technicians Section -->
+                    <h2 class="dashboard-heading">Manage Technicians</h2>
+                    <!-- Add functionality to manage technicians here -->
+                    <div id="searchPatient">
+                        <h2>Search Technicians by ID</h2>
+                        <form id="searchPatientform" method="GET">
+                            <label for="Id">Enter Technicians ID:</label>
+                            <input type="text" id="Id" name="Id" placeholder="Technician ID..." required><br><br>
+                            <button id='btngetPatient' onclick='getPatient()'>Get By ID</button>
+                        </form>
+                    </div><br>
+                    <div id="addPatient">
+                        <h2>Add Technicians</h2>
                         <form id="managePatientForm">
                             <div class="form-row">
                                 <div class="form-group">
@@ -397,53 +510,48 @@
                         </form>
                     </div>
                 </div>
-
-                <div id="manageTechniciansContent" style="display: none;">
-                    <!-- Manage Technicians Section -->
-                    <h2 class="dashboard-heading">Manage Technicians</h2>
-                    <!-- Add functionality to manage technicians here -->
-                </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            window.onload = function () {
-                // Ensure the side menu is displayed when the page loads
-                var menu = document.getElementById("sideMenu");
-                menu.style.display = "block";
+    <script>
+        window.onload = function () {
+            // Ensure the side menu is displayed when the page loads
+            var menu = document.getElementById("sideMenu");
+            menu.style.display = "block";
 
-                // Display the View Appointments section by default
-                showManagePatients();
-            };
+            // Display the View Appointments section by default
+            showManagePatients();
+        };
 
-            function toggleSideMenu() {
-                var menu = document.getElementById("sideMenu");
-                if (menu.classList.contains("menu-hidden")) {
-                    menu.classList.remove("menu-hidden");
-                } else {
-                    menu.classList.add("menu-hidden");
-                }
+        function toggleSideMenu() {
+            var menu = document.getElementById("sideMenu");
+            if (menu.classList.contains("menu-hidden")) {
+                menu.classList.remove("menu-hidden");
+            } else {
+                menu.classList.add("menu-hidden");
             }
+        }
 
-            function logout() {
-                // Implement logout functionality here
-                // Redirect to logout URL or clear session
-                alert("Logging out...");
-            }
+        function logout() {
+            // Implement logout functionality here
+            // Redirect to logout URL or clear session
+            alert("Logging out...");
+        }
 
-            function showManagePatients() {
-                var managePatientsContent = document.getElementById("managePatientsContent");
-                var manageTechniciansContent = document.getElementById("manageTechniciansContent");
-                managePatientsContent.style.display = "block";
-                manageTechniciansContent.style.display = "none";
-            }
+        function showManagePatients() {
+            var managePatientsContent = document.getElementById("managePatientsContent");
+            var manageTechniciansContent = document.getElementById("manageTechniciansContent");
+            managePatientsContent.style.display = "block";
+            manageTechniciansContent.style.display = "none";
+        }
 
-            function showManageTechnicians() {
-                var managePatientsContent = document.getElementById("managePatientsContent");
-                var manageTechniciansContent = document.getElementById("manageTechniciansContent");
-                managePatientsContent.style.display = "none";
-                manageTechniciansContent.style.display = "block";
-            }
-        </script>
-    </body>
+        function showManageTechnicians() {
+            var managePatientsContent = document.getElementById("managePatientsContent");
+            var manageTechniciansContent = document.getElementById("manageTechniciansContent");
+            managePatientsContent.style.display = "none";
+            manageTechniciansContent.style.display = "block";
+        }
+    </script>
+</body>
 </html>
