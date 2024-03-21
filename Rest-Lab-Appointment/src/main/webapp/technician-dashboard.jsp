@@ -10,6 +10,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <title>Technician Dashboard</title>
         <style>
             body {
@@ -283,6 +284,66 @@
             .download-button:hover {
                 background-color: #45a049;
             }
+
+            #patientDetailsTabel {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+
+            #patientDetailsTabel th,
+            #patientDetailsTabel td {
+                padding: 10px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+                border-radius: 5px;
+            }
+
+            #patientDetailsTabel th {
+                background-color: #f2f2f2;
+            }
+
+            #patientDetailsTabel tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            #patientDetailsTabel tbody tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            /* Responsive Styling */
+            @media screen and (max-width: 600px) {
+                #patientDetailsTabel {
+                    border: 1px solid #ccc;
+                }
+                #patientDetailsTabel th,
+                #patientDetailsTabel td {
+                    padding: 8px;
+                }
+            }
+
+            .acceptButton {
+                background-color: green; /* Set background color for accept button */
+                color: white; /* Set text color for accept button */
+                border: none; /* Remove border */
+                padding: 8px 16px; /* Add padding */
+                cursor: pointer; /* Change cursor to pointer on hover */
+                border-radius: 4px; /* Add border radius */
+            }
+
+            .rejectButton {
+                background-color: red; /* Set background color for reject button */
+                color: white; /* Set text color for reject button */
+                border: none; /* Remove border */
+                padding: 8px 16px; /* Add padding */
+                cursor: pointer; /* Change cursor to pointer on hover */
+                border-radius: 4px; /* Add border radius */
+            }
+
+            .acceptButton:hover, .rejectButton:hover {
+                opacity: 0.8; /* Reduce opacity on hover */
+            }
+
         </style>
 
         <script>
@@ -325,13 +386,13 @@
             function addTest(event) {
                 event.preventDefault();
                 let id = document.getElementById("testId").value;
-                
+
                 fetch(url + id)
                         .then(response => {
                             if (response.ok) {
                                 alert("Test ID is already in use. Please choose a different ID.");
                             } else {
-                                
+
                                 const person = {
                                     "testId": id,
                                     "patientName": document.getElementById("patientName").value,
@@ -562,7 +623,7 @@
                     <!-- View Appointments Section -->
                     <h2 class="dashboard-heading">View Appointments</h2>
                     <input type="text" id="appointmentNumberInput" placeholder="Enter Appointment Number">
-                    <button onclick="getAppointments()">Search</button>
+                    <button id="searchButton" onclick="getAppointment()">Search</button>
                     <br><br><br>
                     <table id="appointmentsTable">
                         <thead>
@@ -572,13 +633,13 @@
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Test Type</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="appointmentsTableBody">
-                            <!-- Reports will be populated here -->
+                            <!-- Appointments will be populated here -->
                         </tbody>
                     </table>
-
                 </div>
                 <div id="testDetailsContent" style="display: none;">
                     <!-- Patient Details Section -->
@@ -645,9 +706,10 @@
                                     <th>Test Result</th>
                                     <th>Technicians</th>
                                     <th>Doctor Recommended</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="testDetailsTableBody">
                                 <!-- Table rows will be dynamically added here -->
                             </tbody>
                         </table>
@@ -657,27 +719,22 @@
                 <div id="uploadReportsContent" style="display: none;">
                     <!-- Upload Reports Section -->
                     <h2 class="dashboard-heading">Upload Reports</h2>
-                    <!-- Add your upload report form here -->
                     <form id="uploadForm" enctype="multipart/form-data">
-                        <label for="reportInput">Report ID:</label>
-                        <input type="text" id="reportInput" required><br><br>
+                        <label for="reportId">Report ID:</label>
+                        <input type="text" id="reportId" name="reportId" required><br><br>
                         <label for="fileInput">Choose File:</label>
-                        <input type="file" id="fileInput" required><br><br>
-                        <button type="submit">Upload</button>
+                        <input type="file" id="fileInput" name="fileInput" required><br><br>
+                        <button id='btnUpload' onclick="uploadReport()">Upload</button>
                     </form>
                 </div>
                 <div id="viewPaymentsContent" style="display: none;">
                     <!-- View Payments Section -->
                     <h2 class="dashboard-heading">View Payments</h2>
-                    <!-- Add your view payments content here -->
-                </div>
-                <div id="patientDetailsContent" style="display: none;">
-                    <!-- Patient Details Section -->
-                    <h2 class="dashboard-heading">Patient Details</h2>
-                    <!-- Add your patient details content here -->
-
-                    <div id="patientDetailsView">
-                        <table id="patientDetailsView">
+                    <input type="text" id="paymentId" placeholder="Enter Payment ID">
+                    <button id="searchButton" onclick="getPayment()">Search</button>
+                    <br><br><br>
+                    <div id="paymentView">
+                        <table id=paymentTabel">
                             <thead>
                                 <tr>
                                     <th>Patient ID</th>
@@ -688,7 +745,30 @@
                                     <th>Contact</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="paymentTabelBody">
+                                <!-- Table rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                <div id="patientDetailsContent" style="display: none;">
+                    <!-- Patient Details Section -->
+                    <h2 class="dashboard-heading">Patient Details</h2>
+                    <input type="text" id="patientId" placeholder="Enter Patient ID">
+                    <button id="searchButton" onclick="getPatient()">Search</button>
+                    <br><br><br>
+                    <div id="patientDetailsView">
+                        <table id="patientDetailsTabel">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Patient Name</th>
+                                    <th>Email</th>
+                                    <th>Password</th>
+                                    <th>Date Of Birth</th>
+                                    <th>Contact</th>
+                                </tr>
+                            </thead>
+                            <tbody id="patientDetailsTabelBody">
                                 <!-- Table rows will be dynamically added here -->
                             </tbody>
                         </table>
@@ -764,31 +844,220 @@
 
         </script>
 
-        <script>
-            // Function to fetch appointments from the server and populate the table
-            function getAppointments() {
-                const url = "http://localhost:8080/Rest-Service/resources/appointments/";
 
-                fetch(url)
-                        .then(response => response.json())
-                        .then(data => {
-                            const appointmentsTableBody = document.getElementById('appointmentsTableBody');
-                            appointmentsTableBody.innerHTML = ''; // Clear existing rows
-                            data.forEach(appointment => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                        <td>${appointment.id}</td>
-                        <td>${appointment.name}</td>
-                        <td>${appointment.date}</td>
-                        <td>${appointment.time}</td>
-                        <td>${appointment.testType}</td>
-                    `;
-                                appointmentsTableBody.appendChild(row);
-                            });
+        <script>
+            //*****View Appointments*****
+            $(document).ready(function () {
+                // Fetch data from API
+                fetch('http://localhost:8080/Rest-Service/resources/appointments')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
                         })
-                        .catch(error => console.error('Error fetching appointments:', error));
+                        .then(data => {
+                            var tableBody = $('#appointmentsTableBody');
+
+                            // Clear existing table rows
+                            tableBody.empty();
+
+                            if (data.length === 0) {
+                                tableBody.append('<tr><td colspan="7">No appointments found</td></tr>');
+                            } else {
+                                // Populate table rows with appointments data
+                                data.forEach(function (appointment) {
+                                    var row = '<tr>' +
+                                            '<td>' + appointment.Aid + '</td>' +
+                                            '<td>' + appointment.p_name + '</td>' +
+                                            '<td>' + appointment.date + '</td>' +
+                                            '<td>' + appointment.time + '</td>' +
+                                            '<td>' + appointment.test_Type + '</td>' +
+                                            '<td><button class="acceptButton" data-id="' + appointment.Aid + '">Accept</button>\n\
+                                                 <button class="rejectButton" data-id="' + appointment.Aid + '">Reject</button></td>' +
+                                            '</tr>';
+                                    tableBody.append(row);
+                                });
+
+                                // Add event listener for accept buttons
+                                $('.acceptButton').click(function () {
+                                    var appointmentId = $(this).data('id');
+                                    // Implement accept logic here, e.g., call an accept API endpoint
+                                    console.log('Accepting appointment with ID:', appointmentId);
+                                });
+
+                                // Add event listener for reject buttons
+                                $('.rejectButton').click(function () {
+                                    var appointmentId = $(this).data('id');
+                                    // Implement reject logic here, e.g., call a reject API endpoint
+                                    console.log('Rejecting appointment with ID:', appointmentId);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching or parsing data:', error);
+                            // Handle error, e.g., display a message to the user
+                        });
+            });
+
+
+            //****View TestDetails*****
+            $(document).ready(function () {
+                // Fetch data from API
+                fetch('http://localhost:8080/Rest-Service/resources/testdetails')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            var tableBody = $('#testDetailsTableBody');
+
+                            // Clear existing table rows
+                            tableBody.empty();
+
+                            if (data.length === 0) {
+                                tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
+                            } else {
+                                // Populate table rows with appointments data
+                                data.forEach(function (testdetails) {
+                                    var row = '<tr>' +
+                                            '<td>' + testdetails.testId + '</td>' +
+                                            '<td>' + testdetails.patientName + '</td>' +
+                                            '<td>' + testdetails.testType + '</td>' +
+                                            '<td>' + testdetails.testResult + '</td>' +
+                                            '<td>' + testdetails.technician + '</td>' +
+                                            '<td>' + testdetails.doctor + '</td>' +
+                                            '<td><button class="deleteButton" data-id="' + testdetails.testId + '">Delete</button></td>' +
+                                            '</tr>';
+                                    tableBody.append(row);
+                                });
+
+                                // Add event listener for delete buttons
+                                $('.deleteButton').click(function () {
+                                    var testId = $(this).data('id');
+                                    // Implement delete logic here, e.g., call a delete API endpoint
+                                    console.log('Deleting test details with ID:', testId);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching or parsing data:', error);
+                            // Handle error, e.g., display a message to the user
+                        });
+            });
+            
+            
+            //****View Payment Details*****
+            $(document).ready(function () {
+                // Fetch data from API
+                fetch('http://localhost:8080/Rest-Service/resources/payment')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            var tableBody = $('#paymentTabelBody');
+
+                            // Clear existing table rows
+                            tableBody.empty();
+
+                            if (data.length === 0) {
+                                tableBody.append('<tr><td colspan="6">No Payment details found</td></tr>');
+                            } else {
+                                // Populate table rows with appointments data
+                                data.forEach(function (payment) {
+                                    var row = '<tr>' +
+                                            '<td>' + payment.payment_id + '</td>' +
+                                            '<td>' + payment.appointment_id  + '</td>' +
+                                            '<td>' + payment.name + '</td>' +
+                                            '<td>' + payment.amount + '</td>' +
+                                            '<td>' + payment.payment_date + '</td>' +
+                                            '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching or parsing data:', error);
+                            // Handle error, e.g., display a message to the user
+                        });
+            });
+
+
+            //****View Patient Details*****
+            $(document).ready(function () {
+                // Fetch data from API
+                fetch('http://localhost:8080/Rest-Service/resources/patients')
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            var tableBody = $('#patientDetailsTabelBody');
+
+                            // Clear existing table rows
+                            tableBody.empty();
+
+                            if (data.length === 0) {
+                                tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
+                            } else {
+                                // Populate table rows with appointments data
+                                data.forEach(function (patient) {
+                                    var row = '<tr>' +
+                                            '<td>' + patient.id + '</td>' +
+                                            '<td>' + patient.name + '</td>' +
+                                            '<td>' + patient.email + '</td>' +
+                                            '<td>' + patient.password + '</td>' +
+                                            '<td>' + patient.dob + '</td>' +
+                                            '<td>' + patient.contact + '</td>' +
+                                            '</tr>';
+                                    tableBody.append(row);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching or parsing data:', error);
+                            // Handle error, e.g., display a message to the user
+                        });
+            });
+
+
+        </script>
+
+
+        <script>
+            function uploadReport() {
+                var reportId = document.getElementById('reportId').value;
+                var fileInput = document.getElementById('fileInput').files[0];
+
+                var formData = new FormData();
+                formData.append('reportId', reportId);
+                formData.append('file', fileInput);
+
+                fetch('http://localhost:8080/rest-service/resources/reports/', {
+                    method: 'POST',
+                    body: formData
+                })
+                        .then(response => {
+                            if (response.ok) {
+                                console.log('Report uploaded successfully!');
+                            } else {
+                                console.error('Error uploading report');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error uploading report:', error);
+                        });
             }
         </script>
+
+
 
     </body>
 </html>

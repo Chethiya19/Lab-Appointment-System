@@ -82,31 +82,6 @@ public class DBUtils {
         return patients;
     }
 
-    public List<Patient> getAllPatients() {
-        List<Patient> patients = new ArrayList<>();
-        try {
-            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM patient");) {
-                while (rs.next()) {
-                    Patient pt = new Patient();
-                    pt.setId(rs.getInt("id"));
-                    pt.setName(rs.getString("name"));
-                    pt.setEmail(rs.getString("email"));
-                    pt.setDob(rs.getString("dateOfBirth"));
-                    pt.setPassword(rs.getString("password"));
-                    pt.setContact(rs.getString("contact"));
-                    patients.add(pt);
-                }
-            }
-        } catch (SQLException e) {
-            // Handle SQLException
-            e.printStackTrace(); // or any other logging mechanism
-        } catch (Exception e) {
-            // Handle other exceptions
-            e.printStackTrace(); // or any other logging mechanism
-        }
-        return patients;
-    }
-
     public boolean addPatient(Patient pt) {
         try {
             try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
@@ -182,40 +157,36 @@ public class DBUtils {
         }
         return false;
     }
-    
-    public Appointment getAppointment(int Aid) throws SQLException {
-    Appointment appointment = null;
-    try {
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM appointment WHERE Aid=" + Aid);) {
 
-            while (rs.next()) {
-                appointment = new Appointment();
-                appointment.setAid(rs.getInt("Aid"));
-                appointment.setP_name(rs.getString("p_name"));
-                appointment.setDate(rs.getString("date"));
-                appointment.setTime(rs.getString("time"));
-                appointment.setTest_Type(rs.getString("test_type"));
-                break;
+    public Appointment getAppointment(int Aid) throws SQLException {
+        Appointment appointment = null;
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM appointment WHERE Aid=" + Aid);) {
+
+                while (rs.next()) {
+                    appointment = new Appointment();
+                    appointment.setAid(rs.getInt("Aid"));
+                    appointment.setP_name(rs.getString("p_name"));
+                    appointment.setDate(rs.getString("date"));
+                    appointment.setTime(rs.getString("time"));
+                    appointment.setTest_Type(rs.getString("test_type"));
+                    break;
+                }
+            } catch (SQLException e) {
+                System.err.print(e);
+                throw e;
             }
         } catch (SQLException e) {
             System.err.print(e);
             throw e;
         }
-    } catch (SQLException e) {
-        System.err.print(e);
-        throw e;
+        return appointment;
     }
-    return appointment;
-}
-
 
     public List<Appointment> getAppointments() {
         List<Appointment> appointments = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
+        try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  
+            Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
             while (rs.next()) {
                 Appointment appointment = new Appointment(
                         rs.getInt("Aid"),
@@ -336,10 +307,154 @@ public class DBUtils {
             statement.setString(1, email);
             statement.setString(2, password);
             ResultSet resultSet = statement.executeQuery();
-            return resultSet.next(); // If result set has next, login successful
+            return resultSet.next();
         } catch (Exception ex) {
             ex.printStackTrace();
             return false;
         }
     }
+
+    public Technician getTechnician(int id) throws SQLException {
+        Technician tc = null;
+        try {
+
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM technician WHERE id=" + id);) {
+                while (rs.next()) {
+                    tc = new Technician();
+                    tc.setId(rs.getInt("id"));
+                    tc.setName(rs.getString("name"));
+                    tc.setEmail(rs.getString("email"));
+                    tc.setPassword(rs.getString("password"));
+                    tc.setDob(rs.getString("dateOfBirth"));
+                    tc.setContact(rs.getString("contact"));
+                    break;
+                }
+            } catch (SQLException e) {
+                System.err.print(e);
+                throw e;
+            }
+
+        } catch (SQLException e) {
+            System.err.print(e);
+            throw e;
+        }
+
+        return tc;
+    }
+
+    public List<Technician> getTechnicians() {
+        List<Technician> technicians = new ArrayList<>();
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM technician");) {
+                while (rs.next()) {
+                    Technician tc = new Technician();
+                    tc.setId(rs.getInt("id"));
+                    tc.setName(rs.getString("name"));
+                    tc.setEmail(rs.getString("email"));
+                    tc.setDob(rs.getString("dateOfBirth"));
+                    tc.setPassword(rs.getString("password"));
+                    tc.setContact(rs.getString("contact"));
+                    technicians.add(tc);
+                }
+            } catch (SQLException e) {
+            }
+
+        } catch (Exception e) {
+
+        }
+        return technicians;
+    }
+
+    public List<Technician> getAllTechnician() {
+        List<Technician> technicians = new ArrayList<>();
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM technician");) {
+                while (rs.next()) {
+                    Technician tc = new Technician();
+                    tc.setId(rs.getInt("id"));
+                    tc.setName(rs.getString("name"));
+                    tc.setEmail(rs.getString("email"));
+                    tc.setDob(rs.getString("dateOfBirth"));
+                    tc.setPassword(rs.getString("password"));
+                    tc.setContact(rs.getString("contact"));
+                    technicians.add(tc);
+                }
+            }
+        } catch (SQLException e) {
+            // Handle SQLException
+            e.printStackTrace(); // or any other logging mechanism
+        } catch (Exception e) {
+            // Handle other exceptions
+            e.printStackTrace(); // or any other logging mechanism
+        }
+        return technicians;
+    }
+
+    public boolean addTechnician(Technician tc) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("INSERT INTO technician (name, email, password, dateOfBirth, contact) "
+                        + "VALUES ('" + tc.getName() + "', '" + tc.getEmail() + "', '"
+                        + tc.getPassword() + "', '" + tc.getDob() + "', '" + tc.getContact() + "');");
+
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+
+    public boolean updateTechnician(Technician tc) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("UPDATE technician SET name = '" + tc.getName() + "', email = '" + tc.getEmail() + "',  password = '" + tc.getPassword() + "', dateOfBirth = '" + tc.getDob() + "', contact = '" + tc.getContact() + "' WHERE (id = '" + tc.getId() + "');");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+
+    public boolean deleteTechnician(int id) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("DELETE FROM technician WHERE (id = '" + id + "');");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+
+        }
+        return false;
+    }
+    
+    
+
+    public boolean uploadReport(Report report) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  
+                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO report (reportId, fileInput) VALUES (?, ?)")) {
+                pstmt.setString(1, report.getReportId());
+                pstmt.setBytes(2, report.getReportData());
+                pstmt.executeUpdate();
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace(); 
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); 
+        }
+        return false;
+    }
+    
+    
+
 }

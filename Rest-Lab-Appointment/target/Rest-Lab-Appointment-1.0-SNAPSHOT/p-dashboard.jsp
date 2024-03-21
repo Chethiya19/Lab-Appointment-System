@@ -292,9 +292,10 @@
                             <option value="Lipid Panel">Lipid Panel</option>
                             <option value="Urine Tests">Urine Tests</option>
                         </select><br><br>
-                        <button id="btnmakeAppointment" onclick="makeAppointment()">Submit</button><br><br><br><br>
+                        <button id="btnmakeAppointment" onclick="makeAppointment(event)">Make Appointment</button><br><br><br><br>
                     </form>
                 </div>
+                
 
 
                 <div id="viewAppointmentsContent">
@@ -322,14 +323,17 @@
                             <!-- Reports will be populated here -->
                         </tbody>
                     </table>
-                   
+
                 </div>
             </div>
         </div>
 
         <script>
             const url = "http://localhost:8080/Rest-Service/resources/appointments/";
-            function makeAppointment() {
+
+            function makeAppointment(event) {
+                event.preventDefault();
+                
                 const person = {
                     "p_name": document.getElementById("patientName").value,
                     "date": document.getElementById("appointmentDate").value,
@@ -345,9 +349,25 @@
                     body: JSON.stringify(person)
                 };
 
-                fetch(url, options);
-
+                fetch(url, options)
+                        .then(response => {
+                            if (response.ok) {
+                                // If the response is successful, show success message
+                                alert("Appointment created successfully. You can now proceed to payment.");
+                                document.getElementById("paymentForm").style.display = "block"; // Show payment form
+                            } else {
+                                // If the response is not successful, show error message
+//                                throw new Error("Failed to create appointment. Please try again later.");
+                            }
+                        })
+                        .catch(error => {
+                            // Catch any errors during the fetch process
+                            console.error("Error creating appointment:", error);
+                            alert("Error creating appointment: " + error.message);
+                        });
             }
+
+
 
 
             window.onload = function () {
@@ -400,14 +420,14 @@
 //                }
 //            });
         </script>
-<!--        <script>
-            // Retrieve user ID and name from session storage
-            var Id = sessionStorage.getItem("Id");
-            var userName = sessionStorage.getItem("userName");
-            // Display user ID and name
-            document.getElementById("Id").textContent = Id;
-            document.getElementById("userName").textContent = userName;
-        </script>-->
+        <!--        <script>
+                    // Retrieve user ID and name from session storage
+                    var Id = sessionStorage.getItem("Id");
+                    var userName = sessionStorage.getItem("userName");
+                    // Display user ID and name
+                    document.getElementById("Id").textContent = Id;
+                    document.getElementById("userName").textContent = userName;
+                </script>-->
 
         <script>
             // Sample data for demonstration

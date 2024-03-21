@@ -32,7 +32,7 @@
                 top: 0;
                 left: 0;
                 width: 97.5%;
-                z-index: 1000; /* Ensure it's above other content */
+                z-index: 1000;
             }
             .menu-icon {
                 cursor: pointer;
@@ -43,15 +43,15 @@
                 top: 60px;
                 width: 83%;
                 display: flex;
-                height: calc(96vh - 46px); /* Adjusting for header height */
+                height: calc(96vh - 46px);
             }
             .side-menu {
                 width: 200px;
                 background-color: #4a90e2;
                 color: #fff;
                 padding: 20px;
-                display: block; /* Initially displayed */
-                transition: transform 0.5s ease; /* Add transition for transform property */
+                display: block;
+                transition: transform 0.5s ease;
                 transform: translateX(0);
             }
             .fixed-side-menu {
@@ -60,8 +60,8 @@
                 left: 0;
                 bottom: 0;
                 width: 200px;
-                z-index: 1000; /* Ensure it's above other content */
-                overflow-y: auto; /* Enable scrolling if content exceeds menu height */
+                z-index: 1000;
+                overflow-y: auto;
             }
             .menu-hidden {
                 transform: translateX(-100%);
@@ -76,10 +76,10 @@
                 transition: all 0.3s ease;
             }
             .menu-item a:hover {
-                color: #ffd700; /* Change color on hover */
+                color: #ffd700;
             }
             .logout-btn button {
-                background-color: #ff6347; /* Red */
+                background-color: #ff6347;
                 color: #fff;
                 border: none;
                 padding: 10px 20px;
@@ -89,7 +89,7 @@
                 transition: all 0.3s ease;
             }
             .logout-btn button:hover {
-                background-color: #d9534f; /* Darker Red on hover */
+                background-color: #d9534f;
             }
             .content {
                 flex: 1;
@@ -99,7 +99,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: calc(100vh - 100px); /* Adjusting for header height */
+                height: calc(100vh - 100px);
             }
             .dashboard-heading {
                 font-size: 24px;
@@ -157,7 +157,7 @@
             }
 
             button[type="submit"] {
-                background-color: #4caf50; /* Green */
+                background-color: #4caf50;
                 color: white;
                 border: none;
                 cursor: pointer;
@@ -165,7 +165,7 @@
             }
 
             button[type="submit"]:hover {
-                background-color: #45a049; /* Darker Green on hover */
+                background-color: #45a049;
             }
 
             input[type="text"]:focus,
@@ -192,9 +192,11 @@
                 background-color: #0056b3;
             }
 
-            /* Styling for the container div with ID "searchPatient" */
+            
             #addPatient,
-            #searchPatient {
+            #addTechnician,
+            #searchPatient,
+            #searchTechnician{
                 background-color: #f2f2f2;
                 padding: 20px;
                 margin-left: 5%;
@@ -203,18 +205,18 @@
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             }
 
-            /* Styling for the form within the div */
-            #searchPatientform {
+            #searchPatientform,
+            #searchTechnicianform {
                 margin-top: 20px;
             }
 
-            /* Styling for the form label */
-            #searchPatient label {
+            #searchPatient label,
+            #searchTechnician label {
                 font-weight: bold;
             }
 
-            /* Styling for the input field */
-            #searchPatient input[type="text"] {
+            #searchPatient input[type="text"],
+            #searchTechnician input[type="text"]{
                 width: 30%;
                 padding: 8px;
                 margin: 5px 0;
@@ -223,8 +225,8 @@
                 border-radius: 4px;
             }
 
-            /* Styling for the button */
-            #searchPatient button {
+            #searchPatient button,
+            #searchTechnician button{
                 background-color: #4CAF50;
                 color: white;
                 padding: 10px 20px;
@@ -234,8 +236,8 @@
                 cursor: pointer;
             }
 
-            /* Styling for the button on hover */
-            #searchPatient button:hover {
+            #searchPatient button:hover,
+            #searchTechnician button:hover {
                 background-color: #45a049;
             }
 
@@ -365,13 +367,40 @@
             }
 
 
-            function deletePatient() {
+            function deleteTest(event) {
                 event.preventDefault();
-                let id = document.getElementById("txtID").value;
-                const options = {
-                    method: "DELETE"
-                };
-                fetch(url + id, options);
+
+                let id = document.getElementById("Id").value;
+
+                if (!id) {
+                    alert("Please enter a valid Patient ID.");
+                    return;
+                }
+
+                fetch(url + id)
+                        .then(response => {
+                            if (response.ok) {
+                                const options = {
+                                    method: "DELETE"
+                                };
+
+                                return fetch(url + id, options);
+                            } else {
+                                throw new Error("Patient ID does not exist.");
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Patient details deleted successfully!");
+                                document.getElementById("managePatientForm").reset();
+                            } else {
+                                throw new Error("Failed to delete data.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("Failed to delete data. " + error.message);
+                        });
             }
 
             function clearPatient() {
@@ -383,7 +412,97 @@
                 document.getElementById("contact").value = "";
             }
 
+
         </script>
+
+        <script>
+            const url = "http://localhost:8080/Rest-Service/resources/technicians/";
+
+            function getTechnician(event) {
+                event.preventDefault();
+
+                let id = document.getElementById("id").value;
+
+                if (id.trim() === "") {
+                    alert("Please enter the Technician ID.");
+                    return;
+                }
+
+                const options = {
+                    method: "GET"
+                };
+
+                fetch(url + id, options)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error("Technician details not found");
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            document.getElementById("t_name").value = data.name;
+                            document.getElementById("t_email").value = data.email;
+                            document.getElementById("t_password").value = data.password;
+                            document.getElementById("t_dob").value = data.dob;
+                            document.getElementById("t_contact").value = data.contact;
+                        })
+                        .catch(error => {
+                            alert(error.message);
+                            document.getElementById("manageTechnicianForm").reset();
+                        });
+            }
+
+            function addTechnician(event) {
+                event.preventDefault();
+
+                let email = document.getElementById("t_email").value;
+                const url = 'http://localhost:8080/Rest-Service/resources/technicians/';
+
+                fetch(url + email)
+                        .then(response => {
+                            if (response.ok) {
+                                // Email already exists, display alert
+                                alert("Email is already in use. Please choose a different Email.");
+                            } else {
+                                // Email is not in use, proceed to add technician
+                                const technicianData = {
+                                    "name": document.getElementById("t_name").value,
+                                    "email": document.getElementById("t_email").value,
+                                    "password": document.getElementById("t_password").value,
+                                    "dob": document.getElementById("t_dob").value,
+                                    "contact": document.getElementById("t_contact").value
+                                };
+
+                                const options = {
+                                    method: "POST",
+                                    headers: {
+                                        "content-type": "application/json"
+                                    },
+                                    body: JSON.stringify(technicianData)
+                                };
+
+                                return fetch(url, options);
+                            }
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Technician details added successfully!");
+                                document.getElementById("manageTechnicianForm").reset();
+                            } else {
+                                // Addition failed
+                                throw new Error("Failed to add Technician.");
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert("An error occurred. Please try again later.");
+                        });
+            }
+
+
+        </script>
+
+
 
     </head>
     <body>
@@ -421,6 +540,7 @@
                             <label for="Id">Enter Patient ID:</label>
                             <input type="text" id="Id" name="Id" placeholder="Patient ID..." required><br><br>
                             <button id='btngetPatient' onclick='getPatient(event)'>Get By ID</button>
+                            <button id='btndeletePatient' onclick='deletePatient(event)'>Delete</button>
                         </form>
                     </div><br>
                     <div id="addPatient">
@@ -461,52 +581,52 @@
                     </div>
                 </div>
 
-                <div id="manageTechniciansContent" style="display: none;">
+                <div id="manageTechniciansContent">
                     <!-- Manage Technicians Section -->
                     <h2 class="dashboard-heading">Manage Technicians</h2>
                     <!-- Add functionality to manage technicians here -->
-                    <div id="searchPatient">
+                    <div id="searchTechnician">
                         <h2>Search Technicians by ID</h2>
-                        <form id="searchPatientform" method="GET">
+                        <form id="searchTechnicianform" method="GET">
                             <label for="Id">Enter Technicians ID:</label>
-                            <input type="text" id="Id" name="Id" placeholder="Technician ID..." required><br><br>
-                            <button id='btngetPatient' onclick='getPatient()'>Get By ID</button>
+                            <input type="text" id="Tid" name="Tid" placeholder="Technician ID..." required><br><br>
+                            <button id='btngetTechnician' onclick='getTechnician()'>Get By ID</button>
                         </form>
                     </div><br>
-                    <div id="addPatient">
+                    <div id="addTechnician">
                         <h2>Add Technicians</h2>
-                        <form id="managePatientForm">
+                        <form id="manageTechnicianForm">
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="name">Name:</label>
-                                    <input type="text" id="name" name="name" >
+                                    <input type="text" id="t_name" name="t_name" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="email">Email:</label>
-                                    <input type="email" id="email" name="email" >
+                                    <input type="email" id="t_email" name="t_email" required>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="password">Password:</label>
-                                    <input type="password" id="password" name="password" >
+                                    <input type="password" id="t_password" name="t_password" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="dob">Date of Birth:</label>
-                                    <input type="date" id="dob" name="dob" >
+                                    <input type="date" id="t_dob" name="t_dob" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="contact">Contact:</label>
-                                    <input type="tel" id="contact" name="contact" >
+                                    <input type="tel" id="t_contact" name="t_contact" required>
                                 </div>
                             </div>
                             <!--                        <button type="submit">Submit</button>-->
 
-                            <button id='btnaddPatient' onclick='addPatient()'>Add</button>
-                            <button id='btnupdatePatient' onclick='updatePatient()'>Update</button>
-                            <button id='btndeletePatient' onclick='deletePatient()'>Delete</button>
+                            <button id='btnaddTechnician' onclick='addTechnician(event)'>Add</button>
+                            <button id='btnupdateTechnician' onclick='updateTechnician(event)'>Update</button>
+                            <button id='btndeleteTechnician' onclick='deleteTechnician(event)'>Delete</button>
 
-                            <button id='btnclearPatient' onclick='clearPatient()'>Clear</button>
+                            <button id='btnclearTechnician' onclick='clearTechnician()'>Clear</button>
                         </form>
                     </div>
                 </div>

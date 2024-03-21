@@ -20,15 +20,12 @@ public class Appointment {
         
     }
 
-    public Appointment( String p_name, String date, String time, String test_Type) {
+    public Appointment(int Aid, String p_name, String date, String time, String test_Type) {
+        this.Aid = Aid;
         this.p_name = p_name;
         this.date = date;
         this.time = time;
         this.test_Type = test_Type;
-    }
-
-    Appointment(int aInt, String string, String string0, String string1, String string2) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public int getAid() {
