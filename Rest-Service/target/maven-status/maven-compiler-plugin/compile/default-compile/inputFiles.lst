@@ -6,11 +6,16 @@ C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\my
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\TestDetailsResource.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\Technician.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\PatientResource.java
+C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\PaymentResource.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\ReportResource.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\Report.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\TestDetails.java
+C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\FileUploadService.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\LoginResource.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\EmailSender.java
+C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\EmailService.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\AppointmentResource.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\JakartaRestConfiguration.java
+C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\EmailData.java
 C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\Patient.java
+C:\Users\user\Documents\Lab-Appointment-System\Rest-Service\src\main\java\com\mycompany\rest\service\resources\Payment.java

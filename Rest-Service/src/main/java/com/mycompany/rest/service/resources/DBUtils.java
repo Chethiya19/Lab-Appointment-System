@@ -127,6 +127,7 @@ public class DBUtils {
         }
         return false;
     }
+   
 
     public boolean authenticate(String email, String password) {
         String query = "SELECT * FROM patient WHERE email=? AND password=?";

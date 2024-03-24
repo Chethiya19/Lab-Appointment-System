@@ -1,3 +1,4 @@
+com\mycompany\rest\lab\appointment\resources\PatientDAO.class
 com\mycompany\rest\lab\appointment\resources\JakartaEE9Resource.class
 com\mycompany\rest\lab\appointment\resources\NewWebService.class
 com\mycompany\rest\lab\appointment\JakartaRestConfiguration.class

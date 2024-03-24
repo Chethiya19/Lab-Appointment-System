@@ -20,7 +20,8 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(String name, String email, String password, String dob, String contact) {
+    public Patient(int id, String name, String email, String password, String dob, String contact) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;

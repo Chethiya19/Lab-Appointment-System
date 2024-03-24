@@ -33,7 +33,7 @@
                 top: 0;
                 left: 0;
                 width: 97.5%;
-                z-index: 1000; /* Ensure it's above other content */
+                z-index: 1000; 
             }
             .menu-icon {
                 cursor: pointer;
@@ -44,16 +44,15 @@
                 top: 60px;
                 width: 83%;
                 display: flex;
-                height: calc(96vh - 46px); /* Adjusting for header height */
-
+                height: calc(96vh - 46px); 
             }
             .side-menu {
                 width: 200px;
                 background-color: #4a90e2;
                 color: #fff;
                 padding: 20px;
-                display: block; /* Initially displayed */
-                transition: transform 0.3s ease; /* Add transition for transform property */
+                display: block; 
+                transition: transform 0.3s ease; 
                 transform: translateX(0);
             }
             .fixed-side-menu {
@@ -62,8 +61,8 @@
                 left: 0;
                 bottom: 0;
                 width: 200px;
-                z-index: 1000; /* Ensure it's above other content */
-                overflow-y: auto; /* Enable scrolling if content exceeds menu height */
+                z-index: 1000; 
+                overflow-y: auto;
             }
             .menu-hidden {
                 transform: translateX(-100%);
@@ -78,10 +77,10 @@
                 transition: all 0.3s ease;
             }
             .menu-item a:hover {
-                color: #ffd700; /* Change color on hover */
+                color: #ffd700;
             }
             .logout-btn button {
-                background-color: #ff6347; /* Red */
+                background-color: #ff6347; 
                 color: #fff;
                 border: none;
                 padding: 10px 20px;
@@ -91,7 +90,7 @@
                 transition: all 0.5s ease;
             }
             .logout-btn button:hover {
-                background-color: #d9534f; /* Darker Red on hover */
+                background-color: #d9534f; 
             }
             .content {
                 flex: 1;
@@ -101,7 +100,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: calc(100vh - 100px); /* Adjusting for header height */
+                height: calc(100vh - 100px); 
             }
             .dashboard-heading {
                 font-size: 24px;
@@ -135,13 +134,13 @@
                 background-color: #45a049;
             }
             input[type="submit"] {
-                background-color: #4caf50; /* Green */
+                background-color: #4caf50; 
                 color: white;
                 border: none;
                 cursor: pointer;
             }
             input[type="submit"]:hover {
-                background-color: #45a049; /* Darker Green on hover */
+                background-color: #45a049; 
             }
             select {
                 width: 100%;
@@ -204,8 +203,8 @@
             }
 
             #uploadForm {
-                width: 300px; /* Adjust width as needed */
-                margin: 0 auto; /* Center the form horizontally */
+                width: 300px; 
+                margin: 0 auto;
                 padding: 20px;
                 border: 1px solid #ccc;
                 border-radius: 5px;
@@ -521,69 +520,6 @@
             }
 
         </script>
-
-        <!--        <script>
-                    const url = "http://localhost:8080/Rest-Service/resources/patients/";
-                    function getPatients() {
-                        const options = {
-                            method: "GET"
-                        };
-                        fetch(url, options)
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.length > 0) {
-                                        // Assuming there's a table element with the id "patientTable" in your HTML
-                                        const table = document.getElementById("patientDetailsView");
-        
-                                        // Clear existing table rows
-                                        table.innerHTML = "";
-        
-                                        // Creating table headers
-                                        const headers = ["Name", "Email", "Date of Birth", "Contact"];
-                                        const headerRow = document.createElement("tr");
-                                        headers.forEach(headerText => {
-                                            const header = document.createElement("th");
-                                            header.textContent = headerText;
-                                            headerRow.appendChild(header);
-                                        });
-                                        table.appendChild(headerRow);
-        
-                                        // Loop through the patient data and add rows to the table
-                                        data.forEach(patient => {
-                                            const row = document.createElement("tr");
-        
-                                            // Extracting patient information
-                                            const nameCell = document.createElement("td");
-                                            nameCell.textContent = patient.name;
-        
-                                            const emailCell = document.createElement("td");
-                                            emailCell.textContent = patient.email;
-        
-                                            const dobCell = document.createElement("td");
-                                            dobCell.textContent = patient.dateOfBirth;
-        
-                                            const contactCell = document.createElement("td");
-                                            contactCell.textContent = patient.contact;
-        
-                                            // Appending cells to the row
-                                            row.appendChild(nameCell);
-                                            row.appendChild(emailCell);
-                                            row.appendChild(dobCell);
-                                            row.appendChild(contactCell);
-        
-                                            // Appending row to the table
-                                            table.appendChild(row);
-                                        });
-                                    } else {
-                                        alert("No patients found");
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error("Error fetching patients:", error);
-                                    alert("Error fetching patients. Please try again later.");
-                                });
-                    }
-                </script>-->
 
 
     </head>

@@ -4,7 +4,7 @@
     Author     : user
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -237,6 +237,8 @@
 
         </style>
 
+
+
     </head>
     <body>
         <div class="header fixed-header">
@@ -247,11 +249,7 @@
             <div>
                 <h1>Patient Dashboard</h1>
             </div>
-            <!--            <div>
-                            <p>User ID: <span id="Id"></span></p>
-                            <p>User Name: <span id="userName"></span></p>
-                        </div>-->
-
+            <div id="viewpatientname"></div>
             <div class="logout-btn">
                 <button onclick="logout()">Logout</button>
             </div>
@@ -295,7 +293,7 @@
                         <button id="btnmakeAppointment" onclick="makeAppointment(event)">Make Appointment</button><br><br><br><br>
                     </form>
                 </div>
-                
+
 
 
                 <div id="viewAppointmentsContent">
@@ -333,7 +331,7 @@
 
             function makeAppointment(event) {
                 event.preventDefault();
-                
+
                 const person = {
                     "p_name": document.getElementById("patientName").value,
                     "date": document.getElementById("appointmentDate").value,
@@ -354,7 +352,7 @@
                             if (response.ok) {
                                 // If the response is successful, show success message
                                 alert("Appointment created successfully. You can now proceed to payment.");
-                                document.getElementById("paymentForm").style.display = "block"; // Show payment form
+                                window.location.href = "payment.jsp";
                             } else {
                                 // If the response is not successful, show error message
 //                                throw new Error("Failed to create appointment. Please try again later.");
@@ -369,15 +367,27 @@
 
 
 
-
             window.onload = function () {
                 // Ensure the side menu is displayed when the page loads
                 var menu = document.getElementById("sideMenu");
                 menu.style.display = "block";
 
+                // Get the patient name from the query parameter
+                var urlParams = new URLSearchParams(window.location.search);
+                var PatientName = urlParams.get('name');
+
+                // Display the patient name on the dashboard
+                var patientNameElement = document.getElementById("viewpatientname");
+                if (PatientName) {
+                    patientNameElement.innerHTML = "Logged in as: " + PatientName;
+                } else {
+                    patientNameElement.innerHTML = "Patient name not found.";
+                }
+
                 // Display the View Appointments section by default
                 showMakeAppointment();
             };
+
 
             function toggleSideMenu() {
                 var menu = document.getElementById("sideMenu");
@@ -420,14 +430,6 @@
 //                }
 //            });
         </script>
-        <!--        <script>
-                    // Retrieve user ID and name from session storage
-                    var Id = sessionStorage.getItem("Id");
-                    var userName = sessionStorage.getItem("userName");
-                    // Display user ID and name
-                    document.getElementById("Id").textContent = Id;
-                    document.getElementById("userName").textContent = userName;
-                </script>-->
 
         <script>
             // Sample data for demonstration
@@ -489,5 +491,6 @@
                 alert("Searching for report number: " + reportNumber);
             }
         </script>
+
     </body>
 </html>
