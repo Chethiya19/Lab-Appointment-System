@@ -88,7 +88,7 @@ public class DBUtils {
                 stmt.executeUpdate("INSERT INTO patient (name, email, password, dateOfBirth, contact) "
                         + "VALUES ('" + pt.getName() + "', '" + pt.getEmail() + "', '"
                         + pt.getPassword() + "', '" + pt.getDob() + "', '" + pt.getContact() + "');");
-
+                EmailSender.sendEmail(pt.getEmail(), "Welcome to ABC Laboratory Service", "Dear " + pt.getName() + ",\n\nThank you for signing up with our service.");
                 return true;
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -127,7 +127,6 @@ public class DBUtils {
         }
         return false;
     }
-   
 
     public boolean authenticate(String email, String password) {
         String query = "SELECT * FROM patient WHERE email=? AND password=?";
@@ -186,8 +185,7 @@ public class DBUtils {
 
     public List<Appointment> getAppointments() {
         List<Appointment> appointments = new ArrayList<>();
-        try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  
-            Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
+        try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM appointment")) {
             while (rs.next()) {
                 Appointment appointment = new Appointment(
                         rs.getInt("Aid"),
@@ -436,26 +434,130 @@ public class DBUtils {
         }
         return false;
     }
-    
-    
 
-    public boolean uploadReport(Report report) {
+    public boolean makePayment(Payment payment) {
         try {
-            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  
-                PreparedStatement pstmt = conn.prepareStatement("INSERT INTO report (reportId, fileInput) VALUES (?, ?)")) {
-                pstmt.setString(1, report.getReportId());
-                pstmt.setBytes(2, report.getReportData());
-                pstmt.executeUpdate();
-                return true;
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                // Insert payment details into the payment table
+                String query = "INSERT INTO payment (person_name, amount, card_number, expiry_date, cvv, payment_date) "
+                        + "VALUES ('" + payment.getPerson_name() + "', '" + payment.getAmount() + "','" + payment.getCard_number() + "', '"
+                        + payment.getExpiry_date() + "', '" + payment.getCvv() + "', '" + payment.getPayment_date() + "');";
+                stmt.executeUpdate(query);
+
+                // Retrieve email from the Patients table
+                String emailQuery = "SELECT email FROM patient WHERE name = '" + payment.getPerson_name() + "'";
+                ResultSet rs = stmt.executeQuery(emailQuery);
+                String email = null;
+                if (rs.next()) {
+                    email = rs.getString("email");
+                }
+
+                // Send email if email is found
+                if (email != null) {
+                    EmailSender.sendEmail(email, "Welcome to ABC Laboratory Service", "Dear " + payment.getPerson_name() + ",\n\nYour payment is successful and so is your appointment." + "\n\nThank You.");
+                    return true;
+                } else {
+                    System.out.println("Email not found for " + payment.getPerson_name());
+                }
             } catch (SQLException e) {
-                e.printStackTrace(); 
+                e.printStackTrace();
             }
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
         return false;
     }
-    
-    
+
+    public Report getReport(int rid) throws SQLException {
+        Report rp = null;
+        try {
+ 
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM report WHERE rid=" + rid);) {
+                while (rs.next()) {
+                    rp = new Report();
+                    rp.setRid(rs.getInt("rid"));
+                    rp.setPatient_name(rs.getString("patient_name"));
+                    rp.setPdf_file(rs.getString("pdf_file"));
+                    break;
+                }
+            } catch (SQLException e) {
+                System.err.print(e);
+                throw e;
+            }
+ 
+        } catch (SQLException e) {
+            System.err.print(e);
+            throw e;
+        }
+ 
+        return rp;
+    }
+ 
+    public List<Report> getReports() {
+        List<Report> report = new ArrayList<>();
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery("SELECT * FROM report");) {
+                while (rs.next()) {
+                    Report rp = new Report();
+                    rp.setRid(rs.getInt("rid"));
+                    rp.setPatient_name(rs.getString("patient_name"));
+                    rp.setPdf_file(rs.getString("pdf_file"));
+                    report.add(rp);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+ 
+        } catch (Exception e) {
+ 
+        }
+ 
+        return report;
+    }
+ 
+    public boolean addReport(Report rp) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("INSERT INTO report (rid, patient_name, pdf_file) "
+                        + "VALUES ('" + rp.getRid() + "', '" + rp.getPatient_name() + "', '" + rp.getPdf_file() + "');");
+ 
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+ 
+    public boolean updateReport(Report rp) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("UPDATE  report SET rid = '" + rp.getRid() + "',patient_name = '" + rp.getPatient_name() + "' pdf_file = '" + rp.getPdf_file() + "' WHERE (rid = '" + rp.getRid() + "');");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+ 
+        } catch (Exception e) {
+ 
+        }
+        return false;
+    }
+ 
+    public boolean deleteReport(int rid) {
+        try {
+            try ( Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);  Statement stmt = conn.createStatement();) {
+                stmt.executeUpdate("DELETE FROM report WHERE (rid = '" + rid + "');");
+                return true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+ 
+        } catch (Exception e) {
+ 
+        }
+        return false;
+    }
 
 }

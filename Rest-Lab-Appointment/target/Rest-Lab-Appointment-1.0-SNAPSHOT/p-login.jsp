@@ -66,53 +66,53 @@
         </style>
 
         <script>
-            function checkLogin() {
-                var email = document.getElementById("email").value;
-                var password = document.getElementById("password").value;
-                var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8080/Rest-Service/resources/login", true);
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response.success) {
-                                // Login successful, now retrieve patient name
-                                getPatientName(email);
-                            } else {
-                                document.getElementById("message").innerHTML = response.message;
-                            }
+        function checkLogin() {
+            var email = document.getElementById("email").value;
+            var password = document.getElementById("password").value;
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/Rest-Service/resources/login", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Login successful, now retrieve patient name
+                            getPatientName(email);
                         } else {
-                            document.getElementById("message").innerHTML = "Something went wrong. Please give it another go later.";
+                            document.getElementById("message").innerHTML = response.message;
                         }
+                    } else {
+                        document.getElementById("message").innerHTML = "Something went wrong. Please give it another go later.";
                     }
-                };
-                var data = JSON.stringify({email: email, password: password});
-                xhr.send(data);
-                return false; // Prevent the form from submitting
-            }
+                }
+            };
+            var data = JSON.stringify({email: email, password: password});
+            xhr.send(data);
+            return false; // Prevent the form from submitting
+        }
 
-            function getPatientName(email) {
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", "http://localhost:8080/Rest-Service/resources/login/patientName?email=" + email, true);
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            if (response.success) {
-                                // Patient name retrieved successfully, redirect to patient dashboard
-                                window.location.href = "p-dashboard.jsp?name=" + response.name;
-                            } else {
-                                document.getElementById("message").innerHTML = response.message;
-                            }
+        function getPatientName(email) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/Rest-Service/resources/login/patientName?email=" + email, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.success) {
+                            // Patient name retrieved successfully, redirect to patient dashboard
+                            window.location.href = "p-dashboard.jsp?name=" + response.name;
                         } else {
-                            document.getElementById("message").innerHTML = "Something went wrong. Please give it another go later.";
+                            document.getElementById("message").innerHTML = response.message;
                         }
+                    } else {
+                        document.getElementById("message").innerHTML = "Something went wrong. Please give it another go later.";
                     }
-                };
-                xhr.send();
-            }
-        </script>
+                }
+            };
+            xhr.send();
+        }
+    </script>
 
 
 

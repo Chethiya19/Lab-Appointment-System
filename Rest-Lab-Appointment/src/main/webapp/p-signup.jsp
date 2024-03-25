@@ -70,6 +70,7 @@
 
         <script>
             const url = "http://localhost:8080/Rest-Service/resources/patients/";
+
             function addPatient() {
                 const person = {
                     "name": document.getElementById("name").value,
@@ -80,17 +81,31 @@
                 };
 
                 const options = {
-                   method : "POST", 
-                   headers : {
-                       "content-type" : "application/json"
-                   },
-                   body : JSON.stringify(person)
-               };
-                
-                 fetch(url, options);
-                 
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify(person)
+                };
+
+                fetch(url, options)
+                        .then(response => {
+                            if (response.ok) {
+                                alert("Sign-up successful. You can now log in.");
+                                window.location.href = "p-login.html";
+                            } else {
+                                // If the response is not successful, show error message
+                                throw new Error("Failed to sign up. Please try again later.");
+                            }
+                        })
+                        .catch(error => {
+                            // Catch any errors during the fetch process
+                            console.error("Error signing up:", error);
+                            alert("Error signing up: " + error.message);
+                        });
             }
-            
+
+
             function clearPatient() {
                 document.getElementById("name").value = "";
                 document.getElementById("email").value = "";
@@ -98,7 +113,7 @@
                 document.getElementById("dob").value = "";
                 document.getElementById("contact").value = "";
             }
-            
+
         </script>
     </head>
     <body>
@@ -121,9 +136,9 @@
                 <input type="text" id="contact" name="contact" required>
 
                 <button id='btnGetPatient' onclick='addPatient()'>Sign Up </button>
-                
+
                 <button id='btnClearPatient' onclick='clearPatient()'>Clear</button>
-                
+
                 <label>Already Have an account - <a href="p-login.jsp">Login</a></label>
 
             </form>

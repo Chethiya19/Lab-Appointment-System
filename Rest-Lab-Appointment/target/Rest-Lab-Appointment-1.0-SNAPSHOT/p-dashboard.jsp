@@ -34,8 +34,14 @@
                 width: 97.5%;
                 z-index: 1000; /* Ensure it's above other content */
             }
+            .menu-container {
+                display: flex;
+                align-items: center; /* Align items vertically */
+            }
             .menu-icon {
                 cursor: pointer;
+                font-size: 24px;
+                margin-right: 30px;
             }
             .container {
                 position: relative;
@@ -242,14 +248,16 @@
     </head>
     <body>
         <div class="header fixed-header">
-            <div class="menu-icon" onclick="toggleSideMenu()">
-                <!-- Menu Icon (You can replace this with an actual menu icon image) -->
-                &#9776;
+            <div class="menu-container">
+                <div class="menu-icon" onclick="toggleSideMenu()">
+                    <!-- Menu Icon (You can replace this with an actual menu icon image) -->
+                    &#9776;
+                </div>
+                <div id="viewpatientname"></div>
             </div>
             <div>
                 <h1>Patient Dashboard</h1>
             </div>
-            <div id="viewpatientname"></div>
             <div class="logout-btn">
                 <button onclick="logout()">Logout</button>
             </div>
@@ -351,7 +359,7 @@
                         .then(response => {
                             if (response.ok) {
                                 // If the response is successful, show success message
-                                alert("Appointment created successfully. You can now proceed to payment.");
+                                alert("You should make the Payment for the appointment to be successful.");
                                 window.location.href = "payment.jsp";
                             } else {
                                 // If the response is not successful, show error message

@@ -33,7 +33,7 @@
                 top: 0;
                 left: 0;
                 width: 97.5%;
-                z-index: 1000; 
+                z-index: 1000;
             }
             .menu-icon {
                 cursor: pointer;
@@ -44,15 +44,15 @@
                 top: 60px;
                 width: 83%;
                 display: flex;
-                height: calc(96vh - 46px); 
+                height: calc(96vh - 46px);
             }
             .side-menu {
                 width: 200px;
                 background-color: #4a90e2;
                 color: #fff;
                 padding: 20px;
-                display: block; 
-                transition: transform 0.3s ease; 
+                display: block;
+                transition: transform 0.3s ease;
                 transform: translateX(0);
             }
             .fixed-side-menu {
@@ -61,7 +61,7 @@
                 left: 0;
                 bottom: 0;
                 width: 200px;
-                z-index: 1000; 
+                z-index: 1000;
                 overflow-y: auto;
             }
             .menu-hidden {
@@ -80,7 +80,7 @@
                 color: #ffd700;
             }
             .logout-btn button {
-                background-color: #ff6347; 
+                background-color: #ff6347;
                 color: #fff;
                 border: none;
                 padding: 10px 20px;
@@ -90,7 +90,7 @@
                 transition: all 0.5s ease;
             }
             .logout-btn button:hover {
-                background-color: #d9534f; 
+                background-color: #d9534f;
             }
             .content {
                 flex: 1;
@@ -100,7 +100,7 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: calc(100vh - 100px); 
+                height: calc(100vh - 100px);
             }
             .dashboard-heading {
                 font-size: 24px;
@@ -134,13 +134,13 @@
                 background-color: #45a049;
             }
             input[type="submit"] {
-                background-color: #4caf50; 
+                background-color: #4caf50;
                 color: white;
                 border: none;
                 cursor: pointer;
             }
             input[type="submit"]:hover {
-                background-color: #45a049; 
+                background-color: #45a049;
             }
             select {
                 width: 100%;
@@ -203,7 +203,7 @@
             }
 
             #uploadForm {
-                width: 300px; 
+                width: 300px;
                 margin: 0 auto;
                 padding: 20px;
                 border: 1px solid #ccc;
@@ -657,10 +657,14 @@
                     <h2 class="dashboard-heading">Upload Reports</h2>
                     <form id="uploadForm" enctype="multipart/form-data">
                         <label for="reportId">Report ID:</label>
-                        <input type="text" id="reportId" name="reportId" required><br><br>
-                        <label for="fileInput">Choose File:</label>
-                        <input type="file" id="fileInput" name="fileInput" required><br><br>
-                        <button id='btnUpload' onclick="uploadReport()">Upload</button>
+                        <input type="text" id="reportId" name="reportId" required>
+
+                        <label for="patientName">Patient Name:</label>
+                        <input type="text" id="patientName" name="patientName" required>
+
+                        <label for="uploadReportFile">Upload PDF Report:</label>
+                        <input type="file" id="uploadReportFile" accept=".pdf" required />
+                        <button id="btnUploadReport" onclick="addReport(event)">Upload</button>
                     </form>
                 </div>
                 <div id="viewPaymentsContent" style="display: none;">
@@ -686,312 +690,336 @@
                             </tbody>
                         </table>
                     </div>
-                <div id="patientDetailsContent" style="display: none;">
-                    <!-- Patient Details Section -->
-                    <h2 class="dashboard-heading">Patient Details</h2>
-                    <input type="text" id="patientId" placeholder="Enter Patient ID">
-                    <button id="searchButton" onclick="getPatient()">Search</button>
-                    <br><br><br>
-                    <div id="patientDetailsView">
-                        <table id="patientDetailsTabel">
-                            <thead>
-                                <tr>
-                                    <th>Patient ID</th>
-                                    <th>Patient Name</th>
-                                    <th>Email</th>
-                                    <th>Password</th>
-                                    <th>Date Of Birth</th>
-                                    <th>Contact</th>
-                                </tr>
-                            </thead>
-                            <tbody id="patientDetailsTabelBody">
-                                <!-- Table rows will be dynamically added here -->
-                            </tbody>
-                        </table>
+                    <div id="patientDetailsContent" style="display: none;">
+                        <!-- Patient Details Section -->
+                        <h2 class="dashboard-heading">Patient Details</h2>
+                        <input type="text" id="patientId" placeholder="Enter Patient ID">
+                        <button id="searchButton" onclick="getPatient()">Search</button>
+                        <br><br><br>
+                        <div id="patientDetailsView">
+                            <table id="patientDetailsTabel">
+                                <thead>
+                                    <tr>
+                                        <th>Patient ID</th>
+                                        <th>Patient Name</th>
+                                        <th>Email</th>
+                                        <th>Password</th>
+                                        <th>Date Of Birth</th>
+                                        <th>Contact</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="patientDetailsTabelBody">
+                                    <!-- Table rows will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <script>
-            window.onload = function () {
-                // Ensure the side menu is displayed when the page loads
-                var menu = document.getElementById("sideMenu");
-                menu.style.display = "block";
+            <script>
+                window.onload = function () {
+                    // Ensure the side menu is displayed when the page loads
+                    var menu = document.getElementById("sideMenu");
+                    menu.style.display = "block";
 
-                // Display the View Appointments section by default
-                showViewAppointments();
-            };
+                    // Display the View Appointments section by default
+                    showViewAppointments();
+                };
 
-            function toggleSideMenu() {
-                var menu = document.getElementById("sideMenu");
-                if (menu.classList.contains("menu-hidden")) {
-                    menu.classList.remove("menu-hidden");
-                } else {
-                    menu.classList.add("menu-hidden");
+                function toggleSideMenu() {
+                    var menu = document.getElementById("sideMenu");
+                    if (menu.classList.contains("menu-hidden")) {
+                        menu.classList.remove("menu-hidden");
+                    } else {
+                        menu.classList.add("menu-hidden");
+                    }
                 }
-            }
 
-            function logout() {
-                window.location.href = "http://localhost:8080/Rest-Lab-Appointment/";
-                alert("Logging out...");
-            }
+                function logout() {
+                    window.location.href = "http://localhost:8080/Rest-Lab-Appointment/";
+                    alert("Logging out...");
+                }
 
-            function showViewAppointments() {
-                document.getElementById("viewAppointmentsContent").style.display = "block";
-                document.getElementById("testDetailsContent").style.display = "none";
-                document.getElementById("uploadReportsContent").style.display = "none";
-                document.getElementById("viewPaymentsContent").style.display = "none";
-                document.getElementById("patientDetailsContent").style.display = "none";
-            }
+                function showViewAppointments() {
+                    document.getElementById("viewAppointmentsContent").style.display = "block";
+                    document.getElementById("testDetailsContent").style.display = "none";
+                    document.getElementById("uploadReportsContent").style.display = "none";
+                    document.getElementById("viewPaymentsContent").style.display = "none";
+                    document.getElementById("patientDetailsContent").style.display = "none";
+                }
 
-            function showManageTestDetails() {
-                document.getElementById("viewAppointmentsContent").style.display = "none";
-                document.getElementById("testDetailsContent").style.display = "block";
-                document.getElementById("uploadReportsContent").style.display = "none";
-                document.getElementById("viewPaymentsContent").style.display = "none";
-                document.getElementById("patientDetailsContent").style.display = "none";
-            }
+                function showManageTestDetails() {
+                    document.getElementById("viewAppointmentsContent").style.display = "none";
+                    document.getElementById("testDetailsContent").style.display = "block";
+                    document.getElementById("uploadReportsContent").style.display = "none";
+                    document.getElementById("viewPaymentsContent").style.display = "none";
+                    document.getElementById("patientDetailsContent").style.display = "none";
+                }
 
-            function showUploadReports() {
-                document.getElementById("viewAppointmentsContent").style.display = "none";
-                document.getElementById("testDetailsContent").style.display = "none";
-                document.getElementById("uploadReportsContent").style.display = "block";
-                document.getElementById("viewPaymentsContent").style.display = "none";
-                document.getElementById("patientDetailsContent").style.display = "none";
-            }
+                function showUploadReports() {
+                    document.getElementById("viewAppointmentsContent").style.display = "none";
+                    document.getElementById("testDetailsContent").style.display = "none";
+                    document.getElementById("uploadReportsContent").style.display = "block";
+                    document.getElementById("viewPaymentsContent").style.display = "none";
+                    document.getElementById("patientDetailsContent").style.display = "none";
+                }
 
-            function showViewPayments() {
-                document.getElementById("viewAppointmentsContent").style.display = "none";
-                document.getElementById("testDetailsContent").style.display = "none";
-                document.getElementById("uploadReportsContent").style.display = "none";
-                document.getElementById("viewPaymentsContent").style.display = "block";
-                document.getElementById("patientDetailsContent").style.display = "none";
-            }
+                function showViewPayments() {
+                    document.getElementById("viewAppointmentsContent").style.display = "none";
+                    document.getElementById("testDetailsContent").style.display = "none";
+                    document.getElementById("uploadReportsContent").style.display = "none";
+                    document.getElementById("viewPaymentsContent").style.display = "block";
+                    document.getElementById("patientDetailsContent").style.display = "none";
+                }
 
-            function showPatientDetails() {
-                document.getElementById("viewAppointmentsContent").style.display = "none";
-                document.getElementById("testDetailsContent").style.display = "none";
-                document.getElementById("uploadReportsContent").style.display = "none";
-                document.getElementById("viewPaymentsContent").style.display = "none";
-                document.getElementById("patientDetailsContent").style.display = "block";
-            }
-
-
-        </script>
+                function showPatientDetails() {
+                    document.getElementById("viewAppointmentsContent").style.display = "none";
+                    document.getElementById("testDetailsContent").style.display = "none";
+                    document.getElementById("uploadReportsContent").style.display = "none";
+                    document.getElementById("viewPaymentsContent").style.display = "none";
+                    document.getElementById("patientDetailsContent").style.display = "block";
+                }
 
 
-        <script>
-            //*****View Appointments*****
-            $(document).ready(function () {
-                // Fetch data from API
-                fetch('http://localhost:8080/Rest-Service/resources/appointments')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            var tableBody = $('#appointmentsTableBody');
-
-                            // Clear existing table rows
-                            tableBody.empty();
-
-                            if (data.length === 0) {
-                                tableBody.append('<tr><td colspan="7">No appointments found</td></tr>');
-                            } else {
-                                // Populate table rows with appointments data
-                                data.forEach(function (appointment) {
-                                    var row = '<tr>' +
-                                            '<td>' + appointment.Aid + '</td>' +
-                                            '<td>' + appointment.p_name + '</td>' +
-                                            '<td>' + appointment.date + '</td>' +
-                                            '<td>' + appointment.time + '</td>' +
-                                            '<td>' + appointment.test_Type + '</td>' +
-                                            '<td><button class="acceptButton" data-id="' + appointment.Aid + '">Accept</button>\n\
-                                                 <button class="rejectButton" data-id="' + appointment.Aid + '">Reject</button></td>' +
-                                            '</tr>';
-                                    tableBody.append(row);
-                                });
-
-                                // Add event listener for accept buttons
-                                $('.acceptButton').click(function () {
-                                    var appointmentId = $(this).data('id');
-                                    // Implement accept logic here, e.g., call an accept API endpoint
-                                    console.log('Accepting appointment with ID:', appointmentId);
-                                });
-
-                                // Add event listener for reject buttons
-                                $('.rejectButton').click(function () {
-                                    var appointmentId = $(this).data('id');
-                                    // Implement reject logic here, e.g., call a reject API endpoint
-                                    console.log('Rejecting appointment with ID:', appointmentId);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching or parsing data:', error);
-                            // Handle error, e.g., display a message to the user
-                        });
-            });
+            </script>
 
 
-            //****View TestDetails*****
-            $(document).ready(function () {
-                // Fetch data from API
-                fetch('http://localhost:8080/Rest-Service/resources/testdetails')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            var tableBody = $('#testDetailsTableBody');
+            <script>
+                //*****View Appointments*****
+                $(document).ready(function () {
+                    // Fetch data from API
+                    fetch('http://localhost:8080/Rest-Service/resources/appointments')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                var tableBody = $('#appointmentsTableBody');
 
-                            // Clear existing table rows
-                            tableBody.empty();
+                                // Clear existing table rows
+                                tableBody.empty();
 
-                            if (data.length === 0) {
-                                tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
-                            } else {
-                                // Populate table rows with appointments data
-                                data.forEach(function (testdetails) {
-                                    var row = '<tr>' +
-                                            '<td>' + testdetails.testId + '</td>' +
-                                            '<td>' + testdetails.patientName + '</td>' +
-                                            '<td>' + testdetails.testType + '</td>' +
-                                            '<td>' + testdetails.testResult + '</td>' +
-                                            '<td>' + testdetails.technician + '</td>' +
-                                            '<td>' + testdetails.doctor + '</td>' +
-                                            '<td><button class="deleteButton" data-id="' + testdetails.testId + '">Delete</button></td>' +
-                                            '</tr>';
-                                    tableBody.append(row);
-                                });
+                                if (data.length === 0) {
+                                    tableBody.append('<tr><td colspan="7">No appointments found</td></tr>');
+                                } else {
+                                    // Populate table rows with appointments data
+                                    data.forEach(function (appointment) {
+                                        var row = '<tr>' +
+                                                '<td>' + appointment.Aid + '</td>' +
+                                                '<td>' + appointment.p_name + '</td>' +
+                                                '<td>' + appointment.date + '</td>' +
+                                                '<td>' + appointment.time + '</td>' +
+                                                '<td>' + appointment.test_Type + '</td>' +
+                                                '<td><button class="acceptButton" data-id="' + appointment.Aid + '">Accept</button>\n\
+                                                     <button class="rejectButton" data-id="' + appointment.Aid + '">Reject</button></td>' +
+                                                '</tr>';
+                                        tableBody.append(row);
+                                    });
 
-                                // Add event listener for delete buttons
-                                $('.deleteButton').click(function () {
-                                    var testId = $(this).data('id');
-                                    // Implement delete logic here, e.g., call a delete API endpoint
-                                    console.log('Deleting test details with ID:', testId);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching or parsing data:', error);
-                            // Handle error, e.g., display a message to the user
-                        });
-            });
-            
-            
-            //****View Payment Details*****
-            $(document).ready(function () {
-                // Fetch data from API
-                fetch('http://localhost:8080/Rest-Service/resources/payment')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            var tableBody = $('#paymentTabelBody');
+                                    // Add event listener for accept buttons
+                                    $('.acceptButton').click(function () {
+                                        var appointmentId = $(this).data('id');
+                                        // Implement accept logic here, e.g., call an accept API endpoint
+                                        console.log('Accepting appointment with ID:', appointmentId);
+                                    });
 
-                            // Clear existing table rows
-                            tableBody.empty();
-
-                            if (data.length === 0) {
-                                tableBody.append('<tr><td colspan="6">No Payment details found</td></tr>');
-                            } else {
-                                // Populate table rows with appointments data
-                                data.forEach(function (payment) {
-                                    var row = '<tr>' +
-                                            '<td>' + payment.payment_id + '</td>' +
-                                            '<td>' + payment.appointment_id  + '</td>' +
-                                            '<td>' + payment.name + '</td>' +
-                                            '<td>' + payment.amount + '</td>' +
-                                            '<td>' + payment.payment_date + '</td>' +
-                                            '</tr>';
-                                    tableBody.append(row);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching or parsing data:', error);
-                            // Handle error, e.g., display a message to the user
-                        });
-            });
+                                    // Add event listener for reject buttons
+                                    $('.rejectButton').click(function () {
+                                        var appointmentId = $(this).data('id');
+                                        // Implement reject logic here, e.g., call a reject API endpoint
+                                        console.log('Rejecting appointment with ID:', appointmentId);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching or parsing data:', error);
+                                // Handle error, e.g., display a message to the user
+                            });
+                });
 
 
-            //****View Patient Details*****
-            $(document).ready(function () {
-                // Fetch data from API
-                fetch('http://localhost:8080/Rest-Service/resources/patients')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            var tableBody = $('#patientDetailsTabelBody');
+                //****View TestDetails*****
+                $(document).ready(function () {
+                    // Fetch data from API
+                    fetch('http://localhost:8080/Rest-Service/resources/testdetails')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                var tableBody = $('#testDetailsTableBody');
 
-                            // Clear existing table rows
-                            tableBody.empty();
+                                // Clear existing table rows
+                                tableBody.empty();
 
-                            if (data.length === 0) {
-                                tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
-                            } else {
-                                // Populate table rows with appointments data
-                                data.forEach(function (patient) {
-                                    var row = '<tr>' +
-                                            '<td>' + patient.id + '</td>' +
-                                            '<td>' + patient.name + '</td>' +
-                                            '<td>' + patient.email + '</td>' +
-                                            '<td>' + patient.password + '</td>' +
-                                            '<td>' + patient.dob + '</td>' +
-                                            '<td>' + patient.contact + '</td>' +
-                                            '</tr>';
-                                    tableBody.append(row);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error fetching or parsing data:', error);
-                            // Handle error, e.g., display a message to the user
-                        });
-            });
+                                if (data.length === 0) {
+                                    tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
+                                } else {
+                                    // Populate table rows with appointments data
+                                    data.forEach(function (testdetails) {
+                                        var row = '<tr>' +
+                                                '<td>' + testdetails.testId + '</td>' +
+                                                '<td>' + testdetails.patientName + '</td>' +
+                                                '<td>' + testdetails.testType + '</td>' +
+                                                '<td>' + testdetails.testResult + '</td>' +
+                                                '<td>' + testdetails.technician + '</td>' +
+                                                '<td>' + testdetails.doctor + '</td>' +
+                                                '<td><button class="deleteButton" data-id="' + testdetails.testId + '">Delete</button></td>' +
+                                                '</tr>';
+                                        tableBody.append(row);
+                                    });
+
+                                    // Add event listener for delete buttons
+                                    $('.deleteButton').click(function () {
+                                        var testId = $(this).data('id');
+                                        // Implement delete logic here, e.g., call a delete API endpoint
+                                        console.log('Deleting test details with ID:', testId);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching or parsing data:', error);
+                                // Handle error, e.g., display a message to the user
+                            });
+                });
 
 
-        </script>
+                //****View Payment Details*****
+                $(document).ready(function () {
+                    // Fetch data from API
+                    fetch('http://localhost:8080/Rest-Service/resources/payment')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                var tableBody = $('#paymentTabelBody');
+
+                                // Clear existing table rows
+                                tableBody.empty();
+
+                                if (data.length === 0) {
+                                    tableBody.append('<tr><td colspan="6">No Payment details found</td></tr>');
+                                } else {
+                                    // Populate table rows with appointments data
+                                    data.forEach(function (payment) {
+                                        var row = '<tr>' +
+                                                '<td>' + payment.payment_id + '</td>' +
+                                                '<td>' + payment.appointment_id + '</td>' +
+                                                '<td>' + payment.name + '</td>' +
+                                                '<td>' + payment.amount + '</td>' +
+                                                '<td>' + payment.payment_date + '</td>' +
+                                                '</tr>';
+                                        tableBody.append(row);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching or parsing data:', error);
+                                // Handle error, e.g., display a message to the user
+                            });
+                });
 
 
-        <script>
-            function uploadReport() {
-                var reportId = document.getElementById('reportId').value;
-                var fileInput = document.getElementById('fileInput').files[0];
+                //****View Patient Details*****
+                $(document).ready(function () {
+                    // Fetch data from API
+                    fetch('http://localhost:8080/Rest-Service/resources/patients')
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                var tableBody = $('#patientDetailsTabelBody');
 
-                var formData = new FormData();
-                formData.append('reportId', reportId);
-                formData.append('file', fileInput);
+                                // Clear existing table rows
+                                tableBody.empty();
 
-                fetch('http://localhost:8080/rest-service/resources/reports/', {
-                    method: 'POST',
-                    body: formData
-                })
-                        .then(response => {
-                            if (response.ok) {
-                                console.log('Report uploaded successfully!');
-                            } else {
-                                console.error('Error uploading report');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error uploading report:', error);
-                        });
-            }
-        </script>
+                                if (data.length === 0) {
+                                    tableBody.append('<tr><td colspan="6">No test details found</td></tr>');
+                                } else {
+                                    // Populate table rows with appointments data
+                                    data.forEach(function (patient) {
+                                        var row = '<tr>' +
+                                                '<td>' + patient.id + '</td>' +
+                                                '<td>' + patient.name + '</td>' +
+                                                '<td>' + patient.email + '</td>' +
+                                                '<td>' + patient.password + '</td>' +
+                                                '<td>' + patient.dob + '</td>' +
+                                                '<td>' + patient.contact + '</td>' +
+                                                '</tr>';
+                                        tableBody.append(row);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching or parsing data:', error);
+                                // Handle error, e.g., display a message to the user
+                            });
+                });
+
+
+            </script>
+
+
+            <script>
+                const reportDetailsUrl = "http://localhost:8080/Rest_service/resources/report/";
+
+                function addReport() {
+                    event.preventDefault();
+                    let rid = document.getElementById("reportId").value;
+
+                    // Check if the test ID already exists
+                    fetch(reportDetailsUrl + rid)
+                            .then(response => {
+                                if (response.ok) {
+                                    alert("Report ID is already in use. Please choose a different ID.");
+                                } else {
+                                    const person = {
+                                        "rid": rid,
+                                        "patient_name": document.getElementById("patientName").value,
+                                        "pdf_file": document.getElementById("uploadReportFile").value
+                                    };
+
+                                    const options = {
+                                        method: "POST",
+                                        headers: {
+                                            "content-type": "application/json"
+                                        },
+                                        body: JSON.stringify(person)
+                                    };
+
+                                    fetch(reportDetailsUrl, options)
+                                            .then(response => {
+                                                if (response.ok) {
+                                                    alert("Report Uploading is successful!");
+                                                    document.getElementById("uploadReportForm").reset();
+                                                } else {
+                                                    throw new Error("Failed to upload report.");
+                                                }
+                                            })
+                                            .catch(error => {
+                                                console.error('Error:', error);
+                                                alert("An error occurred. Please try again later.");
+                                            });
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert("An error occurred. Please try again later.");
+                            });
+                }
+            </script>
+
 
 
 

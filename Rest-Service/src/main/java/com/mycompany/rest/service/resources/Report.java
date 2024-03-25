@@ -11,37 +11,41 @@ import java.io.InputStream;
  * @author user
  */
 public class Report {
-    private int id;
-    private String reportId;
-    private byte[] reportData;
-
-    public Report(String reportId, byte[] reportData) {
-        this.reportId = reportId;
-        this.reportData = reportData;
+    private int rid;
+    private String patient_name;
+    private String pdf_file;
+    public Report(){
     }
-
-    public int getId() {
-        return id;
+ 
+    public Report(int rid, String patient_name, String pdf_file) {
+        this.rid = rid;
+        this.patient_name = patient_name;
+        this.pdf_file = pdf_file;
     }
-
-    public void setId(int id) {
-        this.id = id;
+ 
+    public int getRid() {
+        return rid;
     }
+ 
+    public void setRid(int rid) {
+        this.rid = rid;
+    }
+ 
+    public String getPatient_name() {
+        return patient_name;
+    }
+ 
+    public void setPatient_name(String patient_name) {
+        this.patient_name = patient_name;
+    }
+ 
+    public String getPdf_file() {
+        return pdf_file;
+    }
+ 
+    public void setPdf_file(String pdf_file) {
+        this.pdf_file = pdf_file;
+    }
+ 
     
-    public String getReportId() {
-        return reportId;
-    }
-
-    public void setReportId(String reportId) {
-        this.reportId = reportId;
-    }
-
-    public byte[] getReportData() {
-        return reportData;
-    }
-
-    public void setReportData(byte[] reportData) {
-        this.reportData = reportData;
-    }
-
 }

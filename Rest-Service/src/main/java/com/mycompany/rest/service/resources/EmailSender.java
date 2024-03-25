@@ -4,49 +4,62 @@
  */
 package com.mycompany.rest.service.resources;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import jakarta.mail.Authenticator;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
 
-@WebServlet("/sendEmail")
-public class EmailSender extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String toEmail = request.getParameter("toEmail");
-        String subject = request.getParameter("subject");
-        String message = request.getParameter("message");
-
-        Properties properties = new Properties();
+/**
+ *
+ * @author user
+ */
+public class EmailSender {
+    public static void sendEmail(String emailAddressTo, String msgSubject, String msgText) {
+      
+      Properties properties = new Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");
         properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
-        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.auth", "true"); // Enable authentication
+        properties.put("mail.smtp.starttls.enable", "true"); // Enable TLS encryption
+        properties.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+        // Set your email credentials
+        String username = "abc.lab.appointment.system@gmail.com";
+        String password = "npio fpwq schd oztm";
 
-        String email = "bsdark5363@gmail.com";
-        String password = "Pineapple@1234";
-
+        // Create a session with authentication
         Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(email, password);
+                return new PasswordAuthentication(username, password);
             }
         });
 
         try {
-            Message emailMessage = new MimeMessage(session);
-            emailMessage.setFrom(new InternetAddress(email));
-            emailMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            emailMessage.setSubject(subject);
-            emailMessage.setText(message);
-            Transport.send(emailMessage);
-            response.getWriter().println("Email sent successfully!");
+            // Create a default MimeMessage object
+            MimeMessage message = new MimeMessage(session);
+
+            // Set From: header field
+            message.setFrom(new InternetAddress("abc.lab.appointment.system@gmail.com"));
+
+            // Set To: header field
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(emailAddressTo));
+
+            // Set Subject: header field
+            message.setSubject(msgSubject);
+
+            // Set the actual message
+            message.setText(msgText);
+
+            // Send the message
+            Transport.send(message);
+            System.out.println("Email sent successfully.");
         } catch (MessagingException e) {
-            e.printStackTrace();
-            response.getWriter().println("Failed to send email.");
+            System.err.println("Error sending email: " + e.getMessage());
         }
-    }
+   }
 }

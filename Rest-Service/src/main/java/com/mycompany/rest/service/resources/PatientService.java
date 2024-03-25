@@ -16,6 +16,9 @@ public class PatientService {
 
     public boolean verifyLogin(String email, String password) {
         try {
+//            EmailSender emailSender = new EmailSender();
+//            //send email
+//            emailSender.sendEmail(email, "Login Information", password);
             Class.forName("com.mysql.jdbc.Driver");
             Connection conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
             String sql = "SELECT * FROM patient WHERE email=? AND password=?";

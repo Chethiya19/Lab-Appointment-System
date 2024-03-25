@@ -5,7 +5,9 @@
 package com.mycompany.rest.service.resources;
 
 import com.google.gson.Gson;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -23,34 +25,13 @@ public class PaymentResource {
     public PaymentResource() {
     }
 
-//    @GET
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getPayments() {
-//        return Response
-//                .ok(gson.toJson(new DBUtils().getPayments()))
-//                .build();
-//    }
-//
-//    @GET
-//    @Path("{id}")
-//    @Produces(MediaType.APPLICATION_JSON)
-//    public Response getPayment(@PathParam("id") int id) {
-//        try {
-//            Payment payment = new DBUtils().getPayment(id);
-//
-//            if (payment != null) {
-//                return Response
-//                        .ok(gson.toJson(payment))
-//                        .build();
-//            }
-//
-//            return Response
-//                    .status(Response.Status.NOT_FOUND)
-//                    .build();
-//        } catch (Exception e) {
-//            return Response
-//                    .status(Response.Status.INTERNAL_SERVER_ERROR)
-//                    .build();
-//        }
-//    }
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response makePayment(String json) {
+        Payment payment = gson.fromJson(json, Payment.class);
+        new DBUtils().makePayment(payment);
+        return Response
+                .status(Response.Status.CREATED)
+                .build();
+    }
 }
